@@ -9,6 +9,9 @@
 .project
 .classpath
 
+# VSCode
+.vscode/settings.json
+
 # Common
 *target/
 
