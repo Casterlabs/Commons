@@ -86,7 +86,7 @@ public class Promise<T> {
     public void then(Consumer<T> then) {
         this.then = then;
 
-        if (this.isCompleted && this.isSuccess()) {
+        if (this.isCompleted && this.hasCompletedSuccessfully()) {
             this.then.accept(this.result);
         }
     }
@@ -94,7 +94,7 @@ public class Promise<T> {
     public void except(Consumer<Throwable> catcher) {
         this.catcher = catcher;
 
-        if (this.isCompleted && !this.isSuccess()) {
+        if (this.isCompleted && !this.hasCompletedSuccessfully()) {
             this.catcher.accept(this.err);
         }
     }
@@ -106,14 +106,14 @@ public class Promise<T> {
             }
         }
 
-        if (this.isSuccess()) {
+        if (this.hasCompletedSuccessfully()) {
             return this.result;
         } else {
             throw this.err;
         }
     }
 
-    public boolean isSuccess() {
+    public boolean hasCompletedSuccessfully() {
         return this.err == null;
     }
 
