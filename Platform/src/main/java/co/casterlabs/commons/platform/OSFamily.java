@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum OSFamily {
 	// @formatter:off
-    UNIX     ("Unix",    "nux|bsd|.ix|sun|solaris|hp-ux"),
+    UNIX     ("Unix",    "nux|bsd|.ix|sun|solaris|hp-ux|mac|darwin"),
     WINDOWS  ("Windows", "win"),
     DOS      ("DOS",     "dos"),
     VMS      ("VMS",     "vms"),
