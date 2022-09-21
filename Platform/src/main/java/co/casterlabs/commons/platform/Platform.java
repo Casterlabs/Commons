@@ -13,13 +13,13 @@ package co.casterlabs.commons.platform;
 
 public class Platform {
 
-	/** The CPU Architecture of the host, e.g amd64 or aarch64. */
-	public static final Arch arch = Arch.get();
+    /** The CPU Architecture of the host, e.g amd64 or aarch64. */
+    public static final Arch arch = Arch.get();
 
-	/** The family of the host's OS, e.g macOS or Windows NT */
-	public static final OSFamily osFamily = OSFamily.get();
+    /** The family of the host's OS, e.g macOS or Windows NT */
+    public static final OSFamily osFamily = OSFamily.get();
 
-	/** The family distribution of the host's OS, e.g Unix or Windows */
-	public static final OSDistribution osDistribution = OSDistribution.get(osFamily);
+    /** The family distribution of the host's OS, e.g Unix or Windows */
+    public static final OSDistribution osDistribution = OSDistribution.get(osFamily);
 
 }

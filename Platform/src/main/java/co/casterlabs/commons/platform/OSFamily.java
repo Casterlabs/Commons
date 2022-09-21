@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum OSFamily {
-	// @formatter:off
+    // @formatter:off
 	
     UNIX     ("Unix",    "nux|bsd|.ix|sun|solaris|hp-ux|mac|darwin"),
     WINDOWS  ("Windows", "win"),
@@ -29,29 +29,29 @@ public enum OSFamily {
     ;
     // @formatter:on
 
-	private String str;
-	private String regex;
+    private String str;
+    private String regex;
 
-	static OSFamily get() {
-		String osName = System.getProperty("os.name", "<blank>").toLowerCase();
+    static OSFamily get() {
+        String osName = System.getProperty("os.name", "<blank>").toLowerCase();
 
-		for (OSFamily e : values()) {
-			if (Pattern.compile(e.regex).matcher(osName).find()) {
-				return e;
-			}
-		}
+        for (OSFamily e : values()) {
+            if (Pattern.compile(e.regex).matcher(osName).find()) {
+                return e;
+            }
+        }
 
-		return GENERIC;
-	}
+        return GENERIC;
+    }
 
-	/**
-	 * Returns a friendly name for the family, such as Unix or Windows.
-	 *
-	 * @return the friendly name of the family
-	 */
-	@Override
-	public String toString() {
-		return this.str;
-	}
+    /**
+     * Returns a friendly name for the family, such as Unix or Windows.
+     *
+     * @return the friendly name of the family
+     */
+    @Override
+    public String toString() {
+        return this.str;
+    }
 
 }

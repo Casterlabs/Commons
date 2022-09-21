@@ -17,7 +17,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum Arch {
-	// @formatter:off
+    // @formatter:off
 	
     AMD64     ("amd64",    "amd64|x86_64"),
     IA64      ("ia64",     "ia64"),
@@ -34,29 +34,29 @@ public enum Arch {
  ;
     // @formatter:on
 
-	private String str;
-	private String regex;
+    private String str;
+    private String regex;
 
-	static Arch get() {
-		String osArch = System.getProperty("os.arch", "<blank>").toLowerCase();
+    static Arch get() {
+        String osArch = System.getProperty("os.arch", "<blank>").toLowerCase();
 
-		for (Arch arch : values()) {
-			if (Pattern.compile(arch.regex).matcher(osArch).find()) {
-				return arch;
-			}
-		}
+        for (Arch arch : values()) {
+            if (Pattern.compile(arch.regex).matcher(osArch).find()) {
+                return arch;
+            }
+        }
 
-		throw new UnsupportedOperationException("Unknown cpu arch: " + osArch);
-	}
+        throw new UnsupportedOperationException("Unknown cpu arch: " + osArch);
+    }
 
-	/**
-	 * Returns a standardized string, such as amd64 or aarch64.
-	 *
-	 * @return a standardized string
-	 */
-	@Override
-	public String toString() {
-		return this.str;
-	}
+    /**
+     * Returns a standardized string, such as amd64 or aarch64.
+     *
+     * @return a standardized string
+     */
+    @Override
+    public String toString() {
+        return this.str;
+    }
 
 }

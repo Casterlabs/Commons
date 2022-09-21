@@ -23,7 +23,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum OSDistribution {
-	// @formatter:off
+    // @formatter:off
 
 	// DOS
 	MS_DOS     (DOS,     "MS-DOS",      "<manually detected>"),
@@ -48,39 +48,39 @@ public enum OSDistribution {
     ;
     // @formatter:on
 
-	@Getter
-	private OSFamily family;
+    @Getter
+    private OSFamily family;
 
-	private String str;
-	private String regex;
+    private String str;
+    private String regex;
 
-	static OSDistribution get(OSFamily family) {
-		if ((family == OSFamily.DOS) && System.getProperty("path.separator", "").equals(";")) {
-			return MS_DOS;
-		}
+    static OSDistribution get(OSFamily family) {
+        if ((family == OSFamily.DOS) && System.getProperty("path.separator", "").equals(";")) {
+            return MS_DOS;
+        }
 
-		String osName = System.getProperty("os.name", "<blank>").toLowerCase();
+        String osName = System.getProperty("os.name", "<blank>").toLowerCase();
 
-		for (OSDistribution e : values()) {
-			if (e.family != family)
-				continue;
+        for (OSDistribution e : values()) {
+            if (e.family != family)
+                continue;
 
-			if (Pattern.compile(e.regex).matcher(osName).find()) {
-				return e;
-			}
-		}
+            if (Pattern.compile(e.regex).matcher(osName).find()) {
+                return e;
+            }
+        }
 
-		return GENERIC;
-	}
+        return GENERIC;
+    }
 
-	/**
-	 * Returns a friendly name for the distribution, such as macOS or Windows NT.
-	 *
-	 * @return the friendly name of the distribution
-	 */
-	@Override
-	public String toString() {
-		return this.str;
-	}
+    /**
+     * Returns a friendly name for the distribution, such as macOS or Windows NT.
+     *
+     * @return the friendly name of the distribution
+     */
+    @Override
+    public String toString() {
+        return this.str;
+    }
 
 }
