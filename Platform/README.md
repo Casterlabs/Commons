@@ -38,9 +38,9 @@ System.out.println(Platform.arch); // amd64, aarch64, etc.
 
 ## Why are osFamily and osDistribution two different fields?
 
-Well, the history of operating systems is complicated. Consider [this](https://upload.wikimedia.org/wikipedia/commons/6/64/Revised_Unix_OS_Chart.png) diagram of the history of the Unix family alone, we see a lot of familiar faces such as Linux, BSD, and even macOS.
+Well, the history of operating systems is complicated.
 
-Since these distributions are decendants of the same parent project, they have a lot in common. For example, this allows you to _potentially_ reuse native code between Linux and macOS. That's why we decided to include two fields.
+For example, when looking at [the history of the Unix family](https://upload.wikimedia.org/wikipedia/commons/6/64/Revised_Unix_OS_Chart.png), we see a lot of familiar faces such as Linux, BSD, and even macOS; And since these distributions are decendants of the same parent project, they have a lot in common. This _potentially_ allows you to reuse native code between Linux and macOS.
 
 ## Adding to your project
 
