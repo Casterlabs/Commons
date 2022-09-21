@@ -1,3 +1,5 @@
+.DS_Store
+
 # IntelliJ
 *.iml
 .idea/
@@ -12,4 +14,4 @@
 
 # Misc
 *.versionsBackup
-.DS_Store
+*Test.java
