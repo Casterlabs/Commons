@@ -4,7 +4,7 @@ Casterlabs' Commons library, for that sweet, sweet code reuse.
 
 ## Packages
 
-We sort out the different utils into distinct packages, allowing you to pull in only what you need. Unlike other common libraries, this avoids bloating your builds with a bunch of unused code.
+We sort out the different utils into distinct packages, allowing you to pull in only what you need. This avoids bloating your builds with a bunch of unused code, like a lot of other commons libraries do.
 
 Select a subproject to get started.
 
