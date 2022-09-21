@@ -58,8 +58,6 @@ public class Promise<T> {
     }
 
     private void resolve(T result) {
-        assert !this.isCompleted;
-
         this.result = result;
         this.isCompleted = true;
 
@@ -73,8 +71,6 @@ public class Promise<T> {
     }
 
     private void reject(Throwable err) {
-        assert !this.isCompleted;
-
         this.err = err;
         this.isCompleted = true;
 
