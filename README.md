@@ -6,7 +6,7 @@ Casterlabs' Commons library, for that sweet, sweet code reuse.
 
 We sort out the different utils into distinct packages, allowing you to pull in only what you need. Unlike other common libraries, this avoids bloating your builds with a bunch of unused code.
 
-Select a subproject to see it's details and dependency declaration.
+Select a subproject to get started.
 
 [Platform](/Platform/) &bull; OS & CPU arch detection.
 
