@@ -9,7 +9,8 @@ We sort out the different utils into distinct packages, allowing you to pull in 
 Select a subproject to get started.
 
 [Platform](/Platform/) &bull; OS & CPU arch detection.  
-[Async](/Async/) &bull; Threading & async helpers.
+[Async](/Async/) &bull; Threading & async helpers.  
+[Events](/Events/) &bull; Event helpers.
 
 ## Repository
 
