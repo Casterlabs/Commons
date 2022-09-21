@@ -1,3 +1,14 @@
+/* 
+Copyright 2022 Casterlabs
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and limitations under the License.
+*/
 package co.casterlabs.commons.async;
 
 import java.util.ArrayDeque;
@@ -59,6 +70,11 @@ public class ThreadQueue {
         return Thread.currentThread() == this.impl.getThread();
     }
 
+    /**
+     * Asserts that the current thread is the ThreadQueue's thread.
+     * 
+     * @throws IllegalAccessException
+     */
     public void assertThread() {
         if (Thread.currentThread() != this.impl.getThread()) {
             new IllegalAccessException("This call must be made from the main thread.");
@@ -78,7 +94,7 @@ public class ThreadQueue {
         private Deque<Runnable> taskQueue;
         private Object logicLock;
 
-        public DefaultImpl() {
+        private DefaultImpl() {
             this.thread = new Thread(this::_logic);
             this.thread.start();
         }
@@ -103,7 +119,7 @@ public class ThreadQueue {
                 }
 
                 try {
-//                    Thread.yield(); // The thread may lie dormant for a while.
+                    Thread.yield(); // The thread may lie dormant for a while.
 
                     synchronized (this.logicLock) {
                         // Sleep until we get another task.
