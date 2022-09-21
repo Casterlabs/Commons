@@ -112,7 +112,7 @@ public class ThreadQueue {
                         try {
                             popped.run();
                         } catch (Throwable t) {
-                            System.err.printf("An exception occurred whilst processing task in the queue:%s\n");
+                            System.err.println("An exception occurred whilst processing task in the queue:");
                             t.printStackTrace();
                         }
                     } catch (NoSuchElementException ignored) {}
