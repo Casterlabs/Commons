@@ -20,6 +20,9 @@ import org.jetbrains.annotations.Nullable;
 
 import lombok.NonNull;
 
+/**
+ * A helper class for creating event-driven architecture.
+ */
 public class SingleEventProvider<D> {
     private Map<Integer, Consumer<D>> listeners = new ConcurrentHashMap<>();
 
