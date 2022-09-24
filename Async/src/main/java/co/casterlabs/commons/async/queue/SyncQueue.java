@@ -14,9 +14,10 @@ package co.casterlabs.commons.async.queue;
 import java.util.function.Supplier;
 
 /**
- * Lock allows you to "synchronize" the timing of execution.
+ * SyncQueue simplifies running sync-critical code. (It synchronizes the timing
+ * of execution)
  * 
- * @see {@link ThreadQueue} if you need to synchronize execution on a single
+ * @see {@link ThreadQueue} if you need to synchronize execution to a single
  *      thread.
  */
 public class SyncQueue {

@@ -21,9 +21,11 @@ import co.casterlabs.commons.async.Promise;
 import lombok.NonNull;
 
 /**
- * ThreadQueue allows you to "synchronize" execution to a single thread.
+ * ThreadQueue simplifies running thread-critical code. (It synchronizes the
+ * thread of execution)
  * 
- * @see {@link SyncQueue} if you only need to synchronize the timing of execution.
+ * @see {@link SyncQueue} if you only need to synchronize the timing of
+ *      execution.
  */
 public class ThreadQueue {
     private Impl impl;

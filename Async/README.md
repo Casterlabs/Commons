@@ -4,20 +4,6 @@ This package gives you simple facilties for threading and asynchronous work.
 
 ## Examples
 
-Running non thread-safe code:
-
-```java
-Lock lock = new Lock();
-
-try {
-  lock.execute(() -> {
-    // Run your non thread-safe code here.
-  });
-} catch (InterruptedException e) {
-  e.printStackTrace();
-}
-```
-
 Simple asynchronous task (which is cancellable):
 
 ```java
@@ -33,7 +19,21 @@ new AsyncTask(() -> {
 // You can call #cancel() if you want.
 ```
 
-Queuing up tasks to be executed on a specific thread:
+Running sync-critical code:
+
+```java
+SyncQueue queue = new SyncQueue();
+
+try {
+  queue.execute(() -> {
+    // Run your non thread-safe code here.
+  });
+} catch (InterruptedException e) {
+  e.printStackTrace();
+}
+```
+
+Running/Queuing thread-critical code:
 
 ```java
 ThreadQueue queue = new ThreadQueue();
