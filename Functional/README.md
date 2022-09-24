@@ -16,8 +16,9 @@ stringOrInt
   .ifB((i) -> {
     System.out.println(i);
   });
+// Prints: Hello World!
 
-// Hello World!
+stringOrInt.b(); // IllegalStateException: Unable to get the value as type B because the value is of type A.
 ```
 
 Tuples:
