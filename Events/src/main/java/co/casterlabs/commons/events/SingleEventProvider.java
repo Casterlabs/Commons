@@ -20,8 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 import lombok.NonNull;
 
-public class SingleEventProvider<T> {
-    private Map<Integer, Consumer<T>> listeners = new ConcurrentHashMap<>();
+public class SingleEventProvider<D> {
+    private Map<Integer, Consumer<D>> listeners = new ConcurrentHashMap<>();
 
     /* ---------------- */
     /* On               */
@@ -34,7 +34,7 @@ public class SingleEventProvider<T> {
      * 
      * @return          the registration id, to be used with {@link #off(int)}.
      */
-    public int on(@NonNull Consumer<T> listener) {
+    public int on(@NonNull Consumer<D> listener) {
         int id = ThreadLocalRandom.current().nextInt();
         this.listeners.put(id, listener);
 
@@ -74,13 +74,13 @@ public class SingleEventProvider<T> {
      * Fires an event, which can be null, to all registered listeners. Any error
      * generated during fire is printed to stderr and swallowed.
      */
-    public synchronized void fireEvent(@Nullable T data) {
-        for (Consumer<T> listener : this.listeners.values()) {
+    public synchronized void fireEvent(@Nullable D data) {
+        for (Consumer<D> listener : this.listeners.values()) {
             try {
                 listener.accept(data);
-            } catch (Throwable t) {
+            } catch (Throwable ex) {
                 System.err.println("An exception occurred whilst firing event:");
-                t.printStackTrace();
+                ex.printStackTrace();
             }
         }
     }

@@ -21,8 +21,8 @@ import org.jetbrains.annotations.Nullable;
 
 import lombok.NonNull;
 
-public class MultiEventProvider<E extends Enum<?>, T> {
-    private Map<E, Map<Integer, Consumer<T>>> listenerSections = new ConcurrentHashMap<>();
+public class MultiEventProvider<T extends Enum<?>, D> {
+    private Map<T, Map<Integer, Consumer<D>>> listenerSections = new ConcurrentHashMap<>();
 
     /* ---------------- */
     /* On               */
@@ -35,10 +35,10 @@ public class MultiEventProvider<E extends Enum<?>, T> {
      * 
      * @return          the registration id, to be used with {@link #off(int)}.
      */
-    public synchronized int on(@NonNull E type, @NonNull Consumer<T> listener) {
+    public synchronized int on(@NonNull T type, @NonNull Consumer<D> listener) {
         int id = ThreadLocalRandom.current().nextInt();
 
-        Map<Integer, Consumer<T>> listenerSection = this.listenerSections.get(type);
+        Map<Integer, Consumer<D>> listenerSection = this.listenerSections.get(type);
         if (listenerSection == null) {
             // Create it.
             listenerSection = new HashMap<>();
@@ -57,7 +57,7 @@ public class MultiEventProvider<E extends Enum<?>, T> {
      * 
      * @return         the registration id, to be used with {@link #off(int)}.
      */
-    public synchronized int on(@NonNull E type, @NonNull Runnable listener) {
+    public synchronized int on(@NonNull T type, @NonNull Runnable listener) {
         // Secretly, this just wraps #on(E, Consumer).
         return this.on(type, (aVoid) -> listener.run());
     }
@@ -72,7 +72,7 @@ public class MultiEventProvider<E extends Enum<?>, T> {
      * @param id The id given to you after calling #on().
      */
     public synchronized void off(int id) {
-        for (Map<Integer, Consumer<T>> listenerSection : this.listenerSections.values()) {
+        for (Map<Integer, Consumer<D>> listenerSection : this.listenerSections.values()) {
             listenerSection.remove(id);
         }
     }
@@ -85,16 +85,16 @@ public class MultiEventProvider<E extends Enum<?>, T> {
      * Fires an event, which can be null, to all registered listeners. Any error
      * generated during fire is printed to stderr and swallowed.
      */
-    public synchronized void fireEvent(@NonNull E type, @Nullable T data) {
-        Map<Integer, Consumer<T>> listenerSection = this.listenerSections.get(type);
+    public synchronized void fireEvent(@NonNull T type, @Nullable D data) {
+        Map<Integer, Consumer<D>> listenerSection = this.listenerSections.get(type);
 
         if (listenerSection != null) {
-            for (Consumer<T> listener : listenerSection.values()) {
+            for (Consumer<D> listener : listenerSection.values()) {
                 try {
                     listener.accept(data);
-                } catch (Throwable t) {
+                } catch (Throwable ex) {
                     System.err.println("An exception occurred whilst firing event:");
-                    t.printStackTrace();
+                    ex.printStackTrace();
                 }
             }
         }
