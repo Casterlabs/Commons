@@ -34,8 +34,8 @@ public class Promise<T> {
     private T result;
     private Throwable err;
 
-    private Consumer<T> then;
-    private Consumer<Throwable> catcher = (t) -> t.printStackTrace();
+    private Consumer<T> thenHandler;
+    private Consumer<Throwable> catcherHandler = (t) -> t.printStackTrace();
 
     /**
      * Creates the promise, executing the resolver in a new non-daemon thread.
@@ -78,12 +78,12 @@ public class Promise<T> {
             this.awaitLock.notifyAll();
         }
 
-        if (this.then != null) {
-            this.then.accept(this.result);
+        if (this.thenHandler != null) {
+            this.thenHandler.accept(this.result);
         }
 
-        this.then = null;
-        this.catcher = null;
+        this.thenHandler = null;
+        this.catcherHandler = null;
     }
 
     private void reject(Throwable err) {
@@ -94,12 +94,12 @@ public class Promise<T> {
             this.awaitLock.notifyAll();
         }
 
-        if (this.catcher != null) {
-            this.catcher.accept(this.err);
+        if (this.catcherHandler != null) {
+            this.catcherHandler.accept(this.err);
         }
 
-        this.then = null;
-        this.catcher = null;
+        this.thenHandler = null;
+        this.catcherHandler = null;
     }
 
     /* ---------------- */
@@ -112,10 +112,10 @@ public class Promise<T> {
      * @param handler the handler to execute.
      */
     public void then(Consumer<T> handler) {
-        this.then = handler;
+        this.thenHandler = handler;
 
         if (this.hasCompleted && this.completedSuccessfully()) {
-            this.then.accept(this.result);
+            this.thenHandler.accept(this.result);
         }
     }
 
@@ -125,10 +125,10 @@ public class Promise<T> {
      * @param handler the handler to execute.
      */
     public void except(Consumer<Throwable> handler) {
-        this.catcher = handler;
+        this.catcherHandler = handler;
 
         if (this.hasCompleted && !this.completedSuccessfully()) {
-            this.catcher.accept(this.err);
+            this.catcherHandler.accept(this.err);
         }
     }
 
