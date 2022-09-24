@@ -39,7 +39,10 @@ public enum Arch {
  ;
     // @formatter:on
 
-    private String str;
+    /**
+     * A standardized name for the architecture (e.g "amd64" or "aarch64").
+     */
+    private String name;
     private String regex;
 
     static Arch get() {
@@ -57,13 +60,13 @@ public enum Arch {
     }
 
     /**
-     * Returns a standardized string, such as amd64 or aarch64.
-     *
-     * @return a standardized string
+     * See {@link #name}.
+     * 
+     * @return the standardized name of the architecture
      */
     @Override
     public String toString() {
-        return this.str;
+        return this.name;
     }
 
 }

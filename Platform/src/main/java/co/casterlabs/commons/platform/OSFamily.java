@@ -29,7 +29,10 @@ public enum OSFamily {
     ;
     // @formatter:on
 
-    private String str;
+    /**
+     * A friendly name for the family (e.g "Unix" or "Windows").
+     */
+    public final String name;
     private String regex;
 
     static OSFamily get() {
@@ -47,13 +50,13 @@ public enum OSFamily {
     }
 
     /**
-     * Returns a friendly name for the family, such as Unix or Windows.
-     *
-     * @return the friendly name of the family
+     * See {@link #name}.
+     * 
+     * @return the name of the family
      */
     @Override
     public String toString() {
-        return this.str;
+        return this.name;
     }
 
 }

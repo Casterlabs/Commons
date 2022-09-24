@@ -52,7 +52,10 @@ public enum OSDistribution {
     @Getter
     private OSFamily family;
 
-    private String str;
+    /**
+     * A friendly name for the distribution (e.g "macOS" or "Windows NT").
+     */
+    public final String name;
     private String regex;
 
     static OSDistribution get(OSFamily family) {
@@ -80,13 +83,13 @@ public enum OSDistribution {
     }
 
     /**
-     * Returns a friendly name for the distribution, such as macOS or Windows NT.
-     *
-     * @return the friendly name of the distribution
+     * See {@link #name}.
+     * 
+     * @return the name of the distribution
      */
     @Override
     public String toString() {
-        return this.str;
+        return this.name;
     }
 
 }
