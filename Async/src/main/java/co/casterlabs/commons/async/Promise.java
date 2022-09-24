@@ -18,10 +18,18 @@ import org.jetbrains.annotations.Nullable;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.experimental.Accessors;
 
+/**
+ * A much simpler version of {@link java.util.concurrent.CompletableFuture},
+ * more akin to Javascript's Promise.
+ */
 public class Promise<T> {
     private final Object awaitLock = new Object();
-    private @Getter boolean isCompleted;
+
+    @Getter
+    @Accessors(fluent = true)
+    private boolean hasCompleted;
 
     private T result;
     private Throwable err;
@@ -29,36 +37,27 @@ public class Promise<T> {
     private Consumer<T> then;
     private Consumer<Throwable> catcher = (t) -> t.printStackTrace();
 
-    private Promise() {}; // See resolved and rejected.
-
-    public Promise(@NonNull Runnable task) {
-        this(
-            () -> {
-                task.run();
-                return null;
-            },
-            AsyncTask::new
-        );
+    /**
+     * Creates the promise, executing the resolver in a new non-daemon thread.
+     * 
+     * @param    resolver The handler which resolves.
+     * 
+     * @implNote          The spawned thread will be a non-daemon thread.
+     */
+    public Promise(@NonNull Supplier<T> resolver) {
+        this(resolver, AsyncTask::createNonDaemon);
     }
 
-    public Promise(@NonNull Supplier<T> producer) {
-        this(producer, AsyncTask::new);
-    }
-
-    public Promise(@NonNull Runnable task, @NonNull Consumer<Runnable> threadSubmit) {
-        this(
-            () -> {
-                task.run();
-                return null;
-            },
-            threadSubmit
-        );
-    }
-
-    public Promise(@NonNull Supplier<T> producer, @NonNull Consumer<Runnable> threadSubmit) {
+    /**
+     * Creates the promise, executing the resolver in the given thread handler.
+     * 
+     * @param resolver     The handler which resolves.
+     * @param threadSubmit the thread handler to execute in.
+     */
+    public Promise(@NonNull Supplier<T> resolver, @NonNull Consumer<Runnable> threadSubmit) {
         threadSubmit.accept(() -> {
             try {
-                T result = producer.get();
+                T result = resolver.get();
 
                 this.resolve(result);
             } catch (Throwable t) {
@@ -67,9 +66,13 @@ public class Promise<T> {
         });
     }
 
+    /* ---------------- */
+    /* Completion       */
+    /* ---------------- */
+
     private void resolve(T result) {
         this.result = result;
-        this.isCompleted = true;
+        this.hasCompleted = true;
 
         synchronized (this.awaitLock) {
             this.awaitLock.notifyAll();
@@ -82,7 +85,7 @@ public class Promise<T> {
 
     private void reject(Throwable err) {
         this.err = err;
-        this.isCompleted = true;
+        this.hasCompleted = true;
 
         synchronized (this.awaitLock) {
             this.awaitLock.notifyAll();
@@ -93,24 +96,32 @@ public class Promise<T> {
         }
     }
 
-    /**
-     * Executes if the Promise resolves.
-     */
-    public void then(Consumer<T> then) {
-        this.then = then;
+    /* ---------------- */
+    /* Handling         */
+    /* ---------------- */
 
-        if (this.isCompleted && this.hasCompletedSuccessfully()) {
+    /**
+     * Executes the given handler if the Promise resolves.
+     * 
+     * @param handler the handler to execute.
+     */
+    public void then(Consumer<T> handler) {
+        this.then = handler;
+
+        if (this.hasCompleted && this.completedSuccessfully()) {
             this.then.accept(this.result);
         }
     }
 
     /**
-     * Executes if the Promise rejects.
+     * Executes the given handler if the Promise rejects.
+     * 
+     * @param handler the handler to execute.
      */
-    public void except(Consumer<Throwable> catcher) {
-        this.catcher = catcher;
+    public void except(Consumer<Throwable> handler) {
+        this.catcher = handler;
 
-        if (this.isCompleted && !this.hasCompletedSuccessfully()) {
+        if (this.hasCompleted && !this.completedSuccessfully()) {
             this.catcher.accept(this.err);
         }
     }
@@ -124,22 +135,32 @@ public class Promise<T> {
      * @throws InterruptedException the interrupted exception
      */
     public T await() throws Throwable, InterruptedException {
-        if (!this.isCompleted) {
+        if (!this.hasCompleted) {
             synchronized (this.awaitLock) {
                 this.awaitLock.wait();
             }
         }
 
-        if (this.hasCompletedSuccessfully()) {
+        if (this.completedSuccessfully()) {
             return this.result;
         } else {
             throw this.err;
         }
     }
 
-    public boolean hasCompletedSuccessfully() {
+    /**
+     * @return true if the Promise completed successfully (did not throw/reject),
+     *         false if it rejected.
+     */
+    public boolean completedSuccessfully() {
         return this.err == null;
     }
+
+    /* ---------------- */
+    /* Static Helpers   */
+    /* ---------------- */
+
+    private Promise() {};
 
     /**
      * Returns a promise that immediately resolves with the result.
@@ -148,7 +169,7 @@ public class Promise<T> {
      * 
      * @return        the promise
      */
-    public static <T> Promise<T> resolved(@Nullable T result) {
+    public static <T> Promise<T> newResolved(@Nullable T result) {
         Promise<T> promise = new Promise<>();
         promise.resolve(result);
         return promise;
@@ -161,7 +182,7 @@ public class Promise<T> {
      * 
      * @return     the promise
      */
-    public static <T> Promise<T> rejected(@NonNull Throwable err) {
+    public static <T> Promise<T> newRejected(@NonNull Throwable err) {
         Promise<T> promise = new Promise<>();
         promise.reject(err);
         return promise;

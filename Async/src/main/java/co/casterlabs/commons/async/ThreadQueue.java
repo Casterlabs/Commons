@@ -16,17 +16,50 @@ import java.util.Deque;
 import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
-@AllArgsConstructor
+/**
+ * ThreadQueue allows you to "synchronize" execution to a single thread.
+ * 
+ * @see {@link Lock} if you only need to synchronize the timing of execution.
+ */
 public class ThreadQueue {
     private Impl impl;
 
+    /**
+     * Creates a new ThreadQueue with a new execution thread (the default
+     * implementation).
+     * 
+     * @see {@link #ThreadQueue(Impl)}
+     */
     public ThreadQueue() {
         this(new DefaultImpl());
     }
 
+    /**
+     * Creates a new ThreadQueue with the given implementation.
+     * 
+     * @see {@link #ThreadQueue()} for the default behavior.
+     */
+    public ThreadQueue(@NonNull Impl impl) {
+        this.impl = impl;
+    }
+
+    /* ---------------- */
+    /* Task Submission  */
+    /* ---------------- */
+
+    /**
+     * Submits a task to the thread without waiting for completion.
+     * 
+     * @param    task the task to submit.
+     * 
+     * @see           {@link #submitTaskAndWait(Runnable)} if you wish to wait for
+     *                completion.
+     * 
+     * @implNote      This method will synchronously call the task if the current
+     *                thread IS the execution thread.
+     */
     public void submitTask(@NonNull Runnable task) {
         if (isMainThread()) {
             task.run();
@@ -35,10 +68,29 @@ public class ThreadQueue {
         }
     }
 
+    /**
+     * Submits a task to the thread and waits for completion.
+     * 
+     * @param    task the task to submit.
+     * 
+     * @see           {@link #submitTaskAndWait(Runnable)} if you don't wish to wait
+     *                for completion.
+     * 
+     * @implNote      This method will synchronously call the task if the current
+     *                thread IS the execution thread.
+     */
     public void submitTaskAndWait(@NonNull Runnable task) throws InterruptedException, Throwable {
         this.submitTaskWithPromise(task).await();
     }
 
+    /**
+     * Submits a task to the thread, returning a {@link Promise}.
+     * 
+     * @param    task the task to submit.
+     * 
+     * @implNote      This method will synchronously call the task if the current
+     *                thread IS the execution thread.
+     */
     public Promise<Void> submitTaskWithPromise(@NonNull Runnable task) {
         return this.submitTaskWithPromise(() -> {
             task.run();
@@ -46,21 +98,42 @@ public class ThreadQueue {
         });
     }
 
+    /**
+     * Submits a task to the thread, returning a {@link Promise}.
+     * 
+     * @param    task the task to submit.
+     * 
+     * @implNote      This method will synchronously call the task if the current
+     *                thread IS the execution thread.
+     */
     public <T> Promise<T> submitTaskWithPromise(@NonNull Supplier<T> task) {
         if (isMainThread()) {
             try {
-                return Promise.resolved(task.get());
+                return Promise.newResolved(task.get());
             } catch (Throwable t) {
-                return Promise.rejected(t);
+                return Promise.newRejected(t);
             }
         } else {
             return new Promise<T>(task, this::submitTask);
         }
     }
 
+    /* ---------------- */
+    /* Helpers          */
+    /* ---------------- */
+
+    /**
+     * Executes the given task off of the main thread, either synchronously or in a
+     * new thread. This allows you to avoid potentially blocking the main thread for
+     * long-running tasks.
+     * 
+     * @param    task the task to execute off of the main thread.
+     * 
+     * @implNote      The spawned thread will be a daemon thread.
+     */
     public void executeOffOfMainThread(@NonNull Runnable task) {
         if (isMainThread()) {
-            new AsyncTask(task);
+            AsyncTask.create(task);
         } else {
             task.run();
         }
@@ -71,20 +144,34 @@ public class ThreadQueue {
     }
 
     /**
-     * Asserts that the current thread is the ThreadQueue's thread.
+     * Asserts that the current thread is the ThreadQueue's main thread.
      * 
      * @throws IllegalAccessException
      */
-    public void assertThread() {
+    public void assertMainThread() {
         if (Thread.currentThread() != this.impl.getThread()) {
             new IllegalAccessException("This call must be made from the main thread.");
         }
     }
 
+    /* ---------------- */
+    /* Implementation   */
+    /* ---------------- */
+
+    /**
+     * This is the underlying implementation interface for ThreadQueue. Useful for
+     * creating interop with native APIs like EclipseSWT or Rococoa.
+     */
     public interface Impl {
 
+        /**
+         * @return the main thread, or Thread.currentThread() if unsure.
+         */
         public Thread getThread();
 
+        /**
+         * Submits the given task to your implementation.
+         */
         public void submitTask(@NonNull Runnable task);
 
     }

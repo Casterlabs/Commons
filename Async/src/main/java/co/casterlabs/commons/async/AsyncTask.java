@@ -18,16 +18,11 @@ public class AsyncTask {
 
     private Thread t;
 
-    /**
-     * Starts a new async task.
-     *
-     * @param run the task to run
-     */
-    public AsyncTask(@NonNull Runnable run) {
+    private AsyncTask(@NonNull Runnable run, boolean daemon) {
         this.t = new Thread(run);
 
         this.t.setName("AsyncTask #" + taskId++);
-        this.t.setDaemon(true);
+        this.t.setDaemon(daemon);
         this.t.start();
     }
 
@@ -40,6 +35,28 @@ public class AsyncTask {
             this.t.interrupt();
             this.t.stop();
         }
+    }
+
+    /**
+     * Starts a new async task.
+     *
+     * @param    run the task to run
+     * 
+     * @implNote     The spawned thread will be a daemon thread.
+     */
+    public static AsyncTask create(@NonNull Runnable run) {
+        return new AsyncTask(run, true);
+    }
+
+    /**
+     * Starts a new async task.
+     *
+     * @param    run the task to run
+     * 
+     * @implNote     The spawned thread will be a non-daemon thread.
+     */
+    public static AsyncTask createNonDaemon(@NonNull Runnable run) {
+        return new AsyncTask(run, false);
     }
 
 }
