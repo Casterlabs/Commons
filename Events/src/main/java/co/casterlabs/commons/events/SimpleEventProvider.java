@@ -23,7 +23,7 @@ import lombok.NonNull;
 /**
  * A helper class for creating event-driven architecture.
  */
-public class SingleEventProvider<D> {
+public class SimpleEventProvider<D> {
     private Map<Integer, Consumer<D>> listeners = new ConcurrentHashMap<>();
 
     /* ---------------- */

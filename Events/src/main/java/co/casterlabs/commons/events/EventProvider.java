@@ -25,7 +25,7 @@ import lombok.NonNull;
  * A helper class for creating event-driven architecture. This class allows you
  * to fire multiple different events based on an enum of choice.
  */
-public class MultiEventProvider<T extends Enum<?>, D> {
+public class EventProvider<T extends Enum<?>, D> {
     private Map<T, Map<Integer, Consumer<D>>> listenerSections = new ConcurrentHashMap<>();
 
     /* ---------------- */

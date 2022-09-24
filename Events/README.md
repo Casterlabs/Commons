@@ -4,7 +4,7 @@ This package has helpers for creating event-based systems.
 
 ## Examples
 
-Simple event:
+SimpleEventProvider, which doesn't have an event type:
 
 ```java
 SingleEventProvider<String> ep = new SingleEventProvider<>();
@@ -17,10 +17,10 @@ ep.fireEvent("world");
 ep.off(taskId);
 ```
 
-Advanced usage of MultiEventProvider:
+EventProvider, which does have an event type:
 
 ```java
-public class CoffeeMachineMonitor extends MultiEventProvider<CoffeeEventType, CoffeeEvent> {
+public class CoffeeMachineMonitor extends EventProvider<CoffeeEventType, CoffeeEvent> {
 
   public static enum CoffeeEventType {
     // ...
