@@ -25,16 +25,15 @@ import lombok.Getter;
 public enum OSDistribution {
     // @formatter:off
 
-    // DOS       Name      Regex
-	MS_DOS (DOS, "MS-DOS", "<manually detected>"),
-	
-	// WINDOWS           Name          Regex
+	// DOS
+	MS_DOS     (DOS,     "MS-DOS",      "<manually detected>"),
 	
 	// Windows
     WINDOWS_9X (WINDOWS, "Windows 9x",  "windows (95|98|me|ce)"),
     WINDOWS_NT (WINDOWS, "Windows NT",  "win"),
 
 	// Unix
+    MACOSX     (UNIX,    "macOS",       "mac|darwin"),
     SOLARIS    (UNIX,    "Solaris",     "sun|solaris"),
     BSD        (UNIX,    "BSD",         "bsd"),
     LINUX      (UNIX,    "Linux",       "nux"),
@@ -53,7 +52,7 @@ public enum OSDistribution {
     @Getter
     private OSFamily family;
 
-    private String name;
+    private String str;
     private String regex;
 
     static OSDistribution get(OSFamily family) {
@@ -87,7 +86,7 @@ public enum OSDistribution {
      */
     @Override
     public String toString() {
-        return this.name;
+        return this.str;
     }
 
 }
