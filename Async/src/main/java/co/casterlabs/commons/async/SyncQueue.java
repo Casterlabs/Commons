@@ -19,7 +19,7 @@ import java.util.function.Supplier;
  * @see {@link ThreadQueue} if you need to synchronize execution on a single
  *      thread.
  */
-public class Lock {
+public class SyncQueue {
     private final Object lock = new Object();
     private volatile int executing = 0;
 
