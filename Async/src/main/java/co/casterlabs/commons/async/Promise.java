@@ -81,6 +81,9 @@ public class Promise<T> {
         if (this.then != null) {
             this.then.accept(this.result);
         }
+
+        this.then = null;
+        this.catcher = null;
     }
 
     private void reject(Throwable err) {
@@ -94,6 +97,9 @@ public class Promise<T> {
         if (this.catcher != null) {
             this.catcher.accept(this.err);
         }
+
+        this.then = null;
+        this.catcher = null;
     }
 
     /* ---------------- */
