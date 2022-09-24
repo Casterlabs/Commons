@@ -12,19 +12,19 @@ public class Quadruple<A, B, C, D> extends Tuple {
     }
 
     public A a() {
-        return this.getArg(0);
+        return this.get(0);
     }
 
     public B b() {
-        return this.getArg(1);
+        return this.get(1);
     }
 
     public C c() {
-        return this.getArg(2);
+        return this.get(2);
     }
 
     public D d() {
-        return this.getArg(2);
+        return this.get(2);
     }
 
 }

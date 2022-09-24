@@ -32,7 +32,7 @@ public abstract class Tuple {
      * @throws ArrayIndexOutOfBoundsException
      */
     @SuppressWarnings("unchecked")
-    public <T> @Nullable T getArg(int position) {
+    public <T> @Nullable T get(int position) {
         return (T) this.args[position];
     }
 

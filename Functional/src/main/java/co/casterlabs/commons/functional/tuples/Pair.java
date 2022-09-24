@@ -14,11 +14,11 @@ public class Pair<A, B> extends Tuple {
     }
 
     public A a() {
-        return this.getArg(0);
+        return this.get(0);
     }
 
     public B b() {
-        return this.getArg(1);
+        return this.get(1);
     }
 
 }
