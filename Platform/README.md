@@ -36,6 +36,12 @@ What CPU Arch does the host use?
 System.out.println(Platform.arch); // amd64, aarch64, etc.
 ```
 
+Get a filename for a library:
+
+```java
+System.out.println(Platform.formatLibrary("Webview")); // libwebview.so, Webview.dll, etc.
+```
+
 ## Why are osFamily and osDistribution two different fields?
 
 Well, the history of operating systems is complicated.
