@@ -35,12 +35,14 @@ public enum OSFamily {
     static OSFamily get() {
         String osName = System.getProperty("os.name", "<blank>").toLowerCase();
 
+        // Search the enums for a match, returning it.
         for (OSFamily e : values()) {
             if (Pattern.compile(e.regex).matcher(osName).find()) {
                 return e;
             }
         }
 
+        // Fallback.
         return GENERIC;
     }
 

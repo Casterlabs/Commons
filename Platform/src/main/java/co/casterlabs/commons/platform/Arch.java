@@ -19,17 +19,22 @@ import lombok.AllArgsConstructor;
 public enum Arch {
     // @formatter:off
 	
+    // x86/64 family.
     AMD64     ("amd64",    "amd64|x86_64"),
     IA64      ("ia64",     "ia64"),
     X86       ("x86",      "x86|i[0-9]86"),
     
+    // Arm family.
     AARCH64   ("aarch64",  "arm64|aarch64"), // The Apple M1 chip series is aarch64.
     ARM32     ("arm32",    "arm"),
 
+    // IBM's PowerPC architecture.
     POWERPC64 ("ppc64",    "ppc64"),
     POWERPC   ("ppc",      "ppc|power"),
     
-    RISC      ("risc",     "risc|mips|alpha|sparc"), // We lump these together because of their similarities.
+    // Miscellaneous.
+    // We mostly lump these together because of their similarities.
+    RISC      ("risc",     "risc|mips|alpha|sparc"), 
     
  ;
     // @formatter:on
@@ -40,12 +45,14 @@ public enum Arch {
     static Arch get() {
         String osArch = System.getProperty("os.arch", "<blank>").toLowerCase();
 
+        // Search the enums for a match, returning it.
         for (Arch arch : values()) {
             if (Pattern.compile(arch.regex).matcher(osArch).find()) {
                 return arch;
             }
         }
 
+        // Couldn't find a match.
         throw new UnsupportedOperationException("Unknown cpu arch: " + osArch);
     }
 

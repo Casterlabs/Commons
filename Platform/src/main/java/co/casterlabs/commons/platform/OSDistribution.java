@@ -41,8 +41,9 @@ public enum OSDistribution {
     // VMS
 	OPEN_VMS   (VMS,     "OpenVMS",     "vms"),
 	
-
-    // This is our fallback, it'll get matched last.
+	/**
+	 * This is the fallback, this is not to be considered to be a valid value.
+	 */
     GENERIC    (null,    "Generic",     ""),
     
     ;
@@ -55,12 +56,16 @@ public enum OSDistribution {
     private String regex;
 
     static OSDistribution get(OSFamily family) {
+        // If the OS Family is MS DOS then we can't detect it via normal means.
+        // One way is to match path separator which changed in Windows 9x.
         if ((family == OSFamily.DOS) && System.getProperty("path.separator", "").equals(";")) {
             return MS_DOS;
         }
 
         String osName = System.getProperty("os.name", "<blank>").toLowerCase();
 
+        // Loop through the distributions and find one that belongs to the
+        // detected family and matches the regex, returning it if so.
         for (OSDistribution e : values()) {
             if (e.family != family)
                 continue;
@@ -70,6 +75,7 @@ public enum OSDistribution {
             }
         }
 
+        // Fallback.
         return GENERIC;
     }
 
