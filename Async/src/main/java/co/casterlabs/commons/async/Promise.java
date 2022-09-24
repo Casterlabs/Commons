@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.async;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -59,6 +60,23 @@ public class Promise<T> {
                 T result = resolver.get();
 
                 this.resolve(result);
+            } catch (Throwable t) {
+                this.reject(t);
+            }
+        });
+    }
+
+    /**
+     * Creates the promise, executing the handler in a new non-daemon thread.
+     * 
+     * @param    handler The handler which resolves or rejects.
+     * 
+     * @implNote         The spawned thread will be a non-daemon thread.
+     */
+    public Promise(@NonNull BiConsumer<Consumer<T>, Consumer<Throwable>> handler) {
+        AsyncTask.createNonDaemon(() -> {
+            try {
+                handler.accept(this::resolve, this::reject);
             } catch (Throwable t) {
                 this.reject(t);
             }
@@ -199,7 +217,7 @@ public class Promise<T> {
 
     @FunctionalInterface
     public static interface PromiseSupplier<T> {
-        T get() throws Throwable;
+        public T get() throws Throwable;
     }
 
 }
