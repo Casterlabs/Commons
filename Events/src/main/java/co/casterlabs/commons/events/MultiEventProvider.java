@@ -11,10 +11,12 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.events;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -22,8 +24,8 @@ import org.jetbrains.annotations.Nullable;
 import lombok.NonNull;
 
 public class MultiEventProvider<E extends Enum<?>, T> {
-    private Map<E, Map<Integer, Consumer<T>>> listenerSections = new HashMap<>();
-    private Set<Integer> allListeners = new HashSet<>();
+    private Map<E, Map<Integer, Consumer<T>>> listenerSections = new ConcurrentHashMap<>();
+    private Set<Integer> allListeners = Collections.synchronizedSet(new HashSet<>());
 
     /* on */
 

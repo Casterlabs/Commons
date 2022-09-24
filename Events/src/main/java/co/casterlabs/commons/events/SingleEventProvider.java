@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.events;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import lombok.NonNull;
 
 public class SingleEventProvider<T> {
-    private Map<Integer, Consumer<T>> listeners = new HashMap<>();
+    private Map<Integer, Consumer<T>> listeners = new ConcurrentHashMap<>();
 
     /* on */
 
