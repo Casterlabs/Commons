@@ -11,12 +11,10 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.events;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -25,49 +23,68 @@ import lombok.NonNull;
 
 public class MultiEventProvider<E extends Enum<?>, T> {
     private Map<E, Map<Integer, Consumer<T>>> listenerSections = new ConcurrentHashMap<>();
-    private Set<Integer> allListeners = Collections.synchronizedSet(new HashSet<>());
 
-    /* on */
+    /* ---------------- */
+    /* On               */
+    /* ---------------- */
 
+    /**
+     * Registers a {@link Consumer} which accepts an event when the provider fires.
+     * 
+     * @param  listener the listener to register
+     * 
+     * @return          the registration id, to be used with {@link #off(int)}.
+     */
     public synchronized int on(@NonNull E type, @NonNull Consumer<T> listener) {
-        int id = listener.hashCode();
-        Map<Integer, Consumer<T>> listenerSection = this.listenerSections.get(type);
+        int id = ThreadLocalRandom.current().nextInt();
 
+        Map<Integer, Consumer<T>> listenerSection = this.listenerSections.get(type);
         if (listenerSection == null) {
+            // Create it.
             listenerSection = new HashMap<>();
             this.listenerSections.put(type, listenerSection);
         }
 
         listenerSection.put(id, listener);
-        this.allListeners.add(id);
 
         return id;
     }
 
+    /**
+     * Registers a {@link Runnable} which gets executed when the provider fires.
+     * 
+     * @param  handler the handler to register
+     * 
+     * @return         the registration id, to be used with {@link #off(int)}.
+     */
     public synchronized int on(@NonNull E type, @NonNull Runnable listener) {
+        // Secretly, this just wraps #on(E, Consumer).
         return this.on(type, (aVoid) -> listener.run());
     }
 
-    /* off */
+    /* ---------------- */
+    /* Off              */
+    /* ---------------- */
 
-    public synchronized void off(@NonNull Consumer<T> listener) {
-        this.off(listener.hashCode());
-    }
-
-    public synchronized void off(@NonNull Runnable listener) {
-        this.off(listener.hashCode());
-    }
-
+    /**
+     * Unregisters a previously registered event handler.
+     * 
+     * @param id The id given to you after calling #on().
+     */
     public synchronized void off(int id) {
-        this.allListeners.remove(id);
-
         for (Map<Integer, Consumer<T>> listenerSection : this.listenerSections.values()) {
             listenerSection.remove(id);
         }
     }
 
-    /* Firing */
+    /* ---------------- */
+    /* Firing           */
+    /* ---------------- */
 
+    /**
+     * Fires an event, which can be null, to all registered listeners. Any error
+     * generated during fire is printed to stderr and swallowed.
+     */
     public synchronized void fireEvent(@NonNull E type, @Nullable T data) {
         Map<Integer, Consumer<T>> listenerSection = this.listenerSections.get(type);
 

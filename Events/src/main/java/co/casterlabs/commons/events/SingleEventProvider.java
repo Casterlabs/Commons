@@ -13,6 +13,7 @@ package co.casterlabs.commons.events;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import org.jetbrains.annotations.Nullable;
@@ -22,35 +23,57 @@ import lombok.NonNull;
 public class SingleEventProvider<T> {
     private Map<Integer, Consumer<T>> listeners = new ConcurrentHashMap<>();
 
-    /* on */
+    /* ---------------- */
+    /* On               */
+    /* ---------------- */
 
-    public synchronized int on(@NonNull Consumer<T> listener) {
-        int id = listener.hashCode();
+    /**
+     * Registers a {@link Consumer} which accepts an event when the provider fires.
+     * 
+     * @param  listener the listener to register
+     * 
+     * @return          the registration id, to be used with {@link #off(int)}.
+     */
+    public int on(@NonNull Consumer<T> listener) {
+        int id = ThreadLocalRandom.current().nextInt();
         this.listeners.put(id, listener);
 
         return id;
     }
 
-    public synchronized int on(@NonNull Runnable listener) {
-        return this.on((aVoid) -> listener.run());
+    /**
+     * Registers a {@link Runnable} which gets executed when the provider fires.
+     * 
+     * @param  handler the handler to register
+     * 
+     * @return         the registration id, to be used with {@link #off(int)}.
+     */
+    public int on(@NonNull Runnable handler) {
+        // Secretly, this just wraps #on(Consumer).
+        return this.on((aVoid) -> handler.run());
     }
 
-    /* off */
+    /* ---------------- */
+    /* Off              */
+    /* ---------------- */
 
-    public synchronized void off(@NonNull Consumer<T> listener) {
-        this.off(listener.hashCode());
-    }
-
-    public synchronized void off(@NonNull Runnable listener) {
-        this.off(listener.hashCode());
-    }
-
-    public synchronized void off(int id) {
+    /**
+     * Unregisters a previously registered event handler.
+     * 
+     * @param id The id given to you after calling #on().
+     */
+    public void off(int id) {
         this.listeners.remove(id);
     }
 
-    /* Firing */
+    /* ---------------- */
+    /* Firing           */
+    /* ---------------- */
 
+    /**
+     * Fires an event, which can be null, to all registered listeners. Any error
+     * generated during fire is printed to stderr and swallowed.
+     */
     public synchronized void fireEvent(@Nullable T data) {
         for (Consumer<T> listener : this.listeners.values()) {
             try {
