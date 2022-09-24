@@ -118,7 +118,7 @@ public class ThreadQueue {
                 return Promise.newRejected(t);
             }
         } else {
-            return new Promise<T>(task, this::submitTask);
+            return new Promise<T>(() -> task.get(), this::submitTask);
         }
     }
 

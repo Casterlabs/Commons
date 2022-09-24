@@ -12,7 +12,6 @@ See the License for the specific language governing permissions and limitations 
 package co.casterlabs.commons.async;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +43,7 @@ public class Promise<T> {
      * 
      * @implNote          The spawned thread will be a non-daemon thread.
      */
-    public Promise(@NonNull Supplier<T> resolver) {
+    public Promise(@NonNull PromiseSupplier<T> resolver) {
         this(resolver, AsyncTask::createNonDaemon);
     }
 
@@ -54,7 +53,7 @@ public class Promise<T> {
      * @param resolver     The handler which resolves.
      * @param threadSubmit the thread handler to execute in.
      */
-    public Promise(@NonNull Supplier<T> resolver, @NonNull Consumer<Runnable> threadSubmit) {
+    public Promise(@NonNull PromiseSupplier<T> resolver, @NonNull Consumer<Runnable> threadSubmit) {
         threadSubmit.accept(() -> {
             try {
                 T result = resolver.get();
@@ -192,6 +191,15 @@ public class Promise<T> {
         Promise<T> promise = new Promise<>();
         promise.reject(err);
         return promise;
+    }
+
+    /* ---------------- */
+    /* ---------------- */
+    /* ---------------- */
+
+    @FunctionalInterface
+    public static interface PromiseSupplier<T> {
+        T get() throws Throwable;
     }
 
 }
