@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 
 public class Lock {
     private final Object lock = new Object();
-    private int executing = 0;
+    private volatile int executing = 0;
 
     public void execute(Runnable run) throws InterruptedException {
         this.execute(() -> {
@@ -24,7 +24,7 @@ public class Lock {
         });
     }
 
-    public synchronized <T> T execute(Supplier<T> task) throws InterruptedException {
+    public <T> T execute(Supplier<T> task) throws InterruptedException {
         boolean shouldWait = this.executing > 0;
         this.executing++;
 
