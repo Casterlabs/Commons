@@ -9,6 +9,7 @@
 		<module>Platform</module>
 		<module>Async</module>
 		<module>Events</module>
+		<module>Functional</module>
 	</modules>
 
 	<properties>
