@@ -29,7 +29,7 @@ public class Promise<T> {
 
     @Getter
     @Accessors(fluent = true)
-    private boolean hasCompleted;
+    private volatile boolean hasCompleted;
 
     private T result;
     private Throwable err;
