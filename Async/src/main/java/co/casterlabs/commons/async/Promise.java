@@ -87,7 +87,7 @@ public class Promise<T> {
     /* Completion       */
     /* ---------------- */
 
-    private void resolve(T result) {
+    protected void resolve(T result) {
         this.result = result;
         this.hasCompleted = true;
 
@@ -103,7 +103,7 @@ public class Promise<T> {
         this.catcherHandler = null;
     }
 
-    private void reject(Throwable err) {
+    protected void reject(Throwable err) {
         this.err = err;
         this.hasCompleted = true;
 
@@ -183,7 +183,7 @@ public class Promise<T> {
     /* Static Helpers   */
     /* ---------------- */
 
-    private Promise() {};
+    protected Promise() {}; // Also used in PromiseWithHandles.
 
     /**
      * Returns a promise that immediately resolves with the result.
