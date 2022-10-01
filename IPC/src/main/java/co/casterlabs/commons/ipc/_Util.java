@@ -9,21 +9,25 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 
 class _Util {
-    private static final Map<Class<?>, Class<?>> primitiveWrapperMap = Map.of(
-        boolean.class, Boolean.class,
-        byte.class, Byte.class,
-        char.class, Character.class,
-        double.class, Double.class,
-        float.class, Float.class,
-        int.class, Integer.class,
-        long.class, Long.class,
-        short.class, Short.class
-    );
+    private static final Map<Class<?>, Class<?>> primitiveWrapperMap = new HashMap<>();
 
-    static Method deepMethodSearch(Class<?> clazz, String methodName, Class<?>[] expectedParameters) throws NoSuchMethodException {
+    static {
+        primitiveWrapperMap.put(boolean.class, Boolean.class);
+        primitiveWrapperMap.put(byte.class, Byte.class);
+        primitiveWrapperMap.put(char.class, Character.class);
+        primitiveWrapperMap.put(double.class, Double.class);
+        primitiveWrapperMap.put(float.class, Float.class);
+        primitiveWrapperMap.put(int.class, Integer.class);
+        primitiveWrapperMap.put(long.class, Long.class);
+        primitiveWrapperMap.put(short.class, Short.class);
+    }
+
+    static Method deepMethodSearch(Class<?> clazz, String methodName, Class<?>[] expectedParameters)
+            throws NoSuchMethodException {
         if (clazz == null) {
             String paramStr = Arrays.toString(expectedParameters);
             paramStr = paramStr.substring(1, paramStr.length() - 1);
@@ -33,12 +37,14 @@ class _Util {
 
         for (Method method : clazz.getDeclaredMethods()) {
             // Check the name.
-            if (!method.getName().equals(methodName)) continue;
+            if (!method.getName().equals(methodName))
+                continue;
 
             Class<?>[] methodParameters = method.getParameterTypes();
 
             // Make sure they have the same amount of parameters.
-            if (methodParameters.length != expectedParameters.length) continue;
+            if (methodParameters.length != expectedParameters.length)
+                continue;
 
             // Loop over each parameter and make sure they're assignable.
             boolean matches = true;
