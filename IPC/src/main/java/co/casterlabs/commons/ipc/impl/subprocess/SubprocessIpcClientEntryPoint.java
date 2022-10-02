@@ -37,6 +37,22 @@ public class SubprocessIpcClientEntryPoint {
             "unchecked"
     })
     public static void main(String[] args) throws Exception {
+        // Override IO
+        System.setOut(new PrintStream(new IpcOutputStream(PrintChannel.STDOUT), true));
+        System.setErr(new PrintStream(new IpcOutputStream(PrintChannel.STDERR), true));
+        System.setIn(new InputStream() {
+            @Override
+            public int read() throws IOException {
+                throw new UnsupportedOperationException("You cannot read System.in from an IPC child process.");
+            }
+        }); // NOOP
+
+        String clientHandlerClassName = args[0];
+        Class<? extends SubprocessIpcClientHandler> clientHandlerClazz = //
+                (Class<? extends SubprocessIpcClientHandler>) Class.forName(clientHandlerClassName);
+
+        handler = clientHandlerClazz.newInstance();
+
         // Read packets from stdin.
         AsyncTask.createNonDaemon(() -> {
             try (Scanner in = new Scanner(nativeIn)) {
@@ -48,6 +64,7 @@ public class SubprocessIpcClientEntryPoint {
                     connection.handlePacket(packet);
                 }
             } catch (Exception e) {
+                SubprocessIpc.debugError(e);
                 System.exit(1);
                 return;
             }
@@ -69,26 +86,11 @@ public class SubprocessIpcClientEntryPoint {
                     connection.sendMessage(SubprocessIpcPingPacket.INSTANCE);
                 }
             } catch (Exception e) {
+                SubprocessIpc.debugError(e);
                 System.exit(1);
                 return;
             }
         });
-
-        // Override IO
-        System.setOut(new PrintStream(new IpcOutputStream(PrintChannel.STDOUT), true));
-        System.setErr(new PrintStream(new IpcOutputStream(PrintChannel.STDERR), true));
-        System.setIn(new InputStream() {
-            @Override
-            public int read() throws IOException {
-                throw new UnsupportedOperationException("You cannot read System.in from an IPC child process.");
-            }
-        }); // NOOP
-
-        String clientHandlerClassName = args[0];
-        Class<? extends SubprocessIpcClientHandler> clientHandlerClazz = (Class<? extends SubprocessIpcClientHandler>) Class
-                .forName(clientHandlerClassName);
-
-        handler = clientHandlerClazz.newInstance();
     }
 
     static class WrappedIpcConnection extends IpcConnection {

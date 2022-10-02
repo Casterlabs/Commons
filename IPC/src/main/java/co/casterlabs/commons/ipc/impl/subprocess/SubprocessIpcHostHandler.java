@@ -105,6 +105,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
                     this.connection.handlePacket(packet);
                 }
             } catch (Exception e) {
+                SubprocessIpc.debugError(e);
                 this.close();
                 return;
             }
@@ -136,6 +137,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
                     handleByteMessage(type, buff);
                 }
             } catch (Exception e) {
+                SubprocessIpc.debugError(e);
                 this.close();
                 return;
             }
@@ -157,6 +159,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
                     this.connection.sendMessage(SubprocessIpcPingPacket.INSTANCE);
                 }
             } catch (Exception e) {
+                SubprocessIpc.debugError(e);
                 this.close();
                 return;
             }

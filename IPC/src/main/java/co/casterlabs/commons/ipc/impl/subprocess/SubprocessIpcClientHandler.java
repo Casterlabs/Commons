@@ -18,9 +18,10 @@ public abstract class SubprocessIpcClientHandler {
             SubprocessIpcClientEntryPoint.nativeErr.write(length);
             SubprocessIpcClientEntryPoint.nativeErr.write(type);
             SubprocessIpcClientEntryPoint.nativeErr.write(message);
-            SubprocessIpcClientEntryPoint.nativeErr.write(null);
+            SubprocessIpcClientEntryPoint.nativeErr.write(0);
             SubprocessIpcClientEntryPoint.nativeErr.flush();
         } catch (Exception e) {
+            SubprocessIpc.debugError(e);
             System.exit(1);
         }
     }

@@ -6,4 +6,8 @@ class SubprocessIpc {
     static final long PING_INTERVAL = TimeUnit.SECONDS.toMillis(1);
     static final long PING_TIMEOUT = PING_INTERVAL * 2;
 
+    static void debugError(Throwable t) {
+//        t.printStackTrace();
+    }
+
 }
