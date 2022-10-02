@@ -8,7 +8,7 @@ All actual messaging is done over JSON, this is for interoperability and ease-of
 
 ## Examples
 
-Full example:
+Using your own communication:
 
 ```java
 public class Example {
@@ -55,6 +55,60 @@ public class Example {
 
         public int answer(int base) {
             return base * 2;
+        }
+
+    }
+
+}
+```
+
+Spawning another Java process and communicating with it:
+
+```java
+public class Test {
+
+    public static void main(String[] args) throws Exception {
+        TestHost test = new TestHost();
+    }
+
+    public static class TestClient extends SubprocessIpcClientHandler {
+
+        public TestClient() {
+            this.sendMessage("Hello host!");
+            this.sendByteMessage(2, "To: World\nFrom: Client\n\nHello!".getBytes());
+        }
+
+        @Override
+        public void handleMessage(Object message) {
+            System.out.printf("Message from host:   %s\n", message);
+        }
+
+    }
+
+    public static class TestHost extends SubprocessIpcHostHandler {
+
+        public TestHost() throws IOException {
+            super(TestClient.class);
+            this.sendMessage("Hello client!");
+        }
+
+        @Override
+        public void handleMessage(Object message) {
+            System.out.printf("Message from client: %s\n", message);
+        }
+
+        @Override
+        public void handleByteMessage(int type, byte[] message) {
+            System.out.printf(
+                    "Byte message from client: (type: %d) %s\n",
+                    type,
+                    Base64.getEncoder().encodeToString(message)
+            );
+        }
+
+        @Override
+        public void onClose() {
+            System.out.println("Client closed");
         }
 
     }
