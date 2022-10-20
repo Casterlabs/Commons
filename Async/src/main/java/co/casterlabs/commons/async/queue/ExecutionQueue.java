@@ -19,6 +19,9 @@ public interface ExecutionQueue {
      * @param task the task to execute.
      * 
      * @return the value returned by the task.
+     * 
+     * @throws Any Throwable thrown by task, it is assumed that you know the
+     *             exceptions in advance.
      */
     public <T> T execute(Supplier<T> task);
 
@@ -26,6 +29,9 @@ public interface ExecutionQueue {
      * Submits the given task and waits for completion.
      * 
      * @param task the task to execute.
+     * 
+     * @throws Any Throwable thrown by task, it is assumed that you know the
+     *             exceptions in advance.
      */
     default void execute(Runnable task) {
         this.execute(() -> {
