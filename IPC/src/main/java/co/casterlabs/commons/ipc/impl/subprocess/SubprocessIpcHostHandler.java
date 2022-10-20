@@ -19,6 +19,7 @@ import java.util.Scanner;
 import co.casterlabs.commons.async.AsyncTask;
 import co.casterlabs.commons.async.queue.ThreadExecutionQueue;
 import co.casterlabs.commons.ipc.IpcConnection;
+import co.casterlabs.commons.ipc.impl.subprocess.SubprocessIpcClientEntryPoint.WrappedIpcConnection;
 import co.casterlabs.commons.ipc.packets.IpcPacket;
 import co.casterlabs.commons.ipc.packets.IpcPacket.IpcPacketType;
 import co.casterlabs.rakurai.json.Rson;
@@ -202,7 +203,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
                     }
                 }
             } else {
-                dispatchThread.submitTask(() -> {
+                dispatchThread.execute(() -> {
                     // Different method.
                     SubprocessIpcHostHandler.this.handleMessage(message);
                 });

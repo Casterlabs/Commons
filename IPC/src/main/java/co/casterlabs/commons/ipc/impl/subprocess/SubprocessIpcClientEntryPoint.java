@@ -114,7 +114,7 @@ public class SubprocessIpcClientEntryPoint {
                         break;
                 }
             } else {
-                dispatchThread.submitTask(() -> {
+                dispatchThread.execute(() -> {
                     handler.handleMessage(message);
                 });
             }
