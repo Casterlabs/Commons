@@ -7,7 +7,8 @@ This package gives you simple facilties for threading and asynchronous work.
 Simple asynchronous task (which is cancellable):
 
 ```java
-new AsyncTask(() -> {
+// You can also use createNonDaemon() if you need a normal thread.
+AsyncTask.create(() -> {
   try {
     Thread.sleep(10000);
     System.out.println("Look ma, async!");
