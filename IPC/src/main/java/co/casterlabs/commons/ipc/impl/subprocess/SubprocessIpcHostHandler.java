@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import co.casterlabs.commons.async.AsyncTask;
-import co.casterlabs.commons.async.queue.ThreadQueue;
+import co.casterlabs.commons.async.queue.ThreadExecutionQueue;
 import co.casterlabs.commons.ipc.IpcConnection;
 import co.casterlabs.commons.ipc.packets.IpcPacket;
 import co.casterlabs.commons.ipc.packets.IpcPacket.IpcPacketType;
@@ -27,7 +27,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 
 public abstract class SubprocessIpcHostHandler implements Closeable {
-    private final ThreadQueue dispatchThread = new ThreadQueue();
+    private final ThreadExecutionQueue dispatchThread = new ThreadExecutionQueue();
 
     private WrappedIpcConnection connection = new WrappedIpcConnection();
     private long lastPing = System.currentTimeMillis();

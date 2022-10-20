@@ -25,10 +25,10 @@ import lombok.SneakyThrows;
  * ThreadQueue simplifies running thread-critical code. (It synchronizes the
  * thread of execution)
  * 
- * @see {@link SyncQueue} if you only need to synchronize the timing of
+ * @see {@link SyncExecutionQueue} if you only need to synchronize the timing of
  *      execution.
  */
-public class ThreadQueue implements ExecutionQueue {
+public class ThreadExecutionQueue implements ExecutionQueue {
     private Impl impl;
 
     /**
@@ -37,7 +37,7 @@ public class ThreadQueue implements ExecutionQueue {
      * 
      * @see {@link #ThreadQueue(Impl)}
      */
-    public ThreadQueue() {
+    public ThreadExecutionQueue() {
         this(new DefaultImpl());
     }
 
@@ -46,7 +46,7 @@ public class ThreadQueue implements ExecutionQueue {
      * 
      * @see {@link #ThreadQueue()} for the default behavior.
      */
-    public ThreadQueue(@NonNull Impl impl) {
+    public ThreadExecutionQueue(@NonNull Impl impl) {
         this.impl = impl;
     }
 

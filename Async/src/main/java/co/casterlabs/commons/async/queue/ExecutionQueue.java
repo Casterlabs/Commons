@@ -7,8 +7,8 @@ import co.casterlabs.commons.async.Promise;
 /**
  * An interface for implementing a queue that guarantees an order-of-execution.
  * 
- * @see {@link SyncQueue}
- * @see {@link ThreadQueue}
+ * @see {@link SyncExecutionQueue}
+ * @see {@link ThreadExecutionQueue}
  */
 public interface ExecutionQueue {
 

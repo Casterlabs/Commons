@@ -11,7 +11,7 @@ import java.util.Base64;
 import java.util.Scanner;
 
 import co.casterlabs.commons.async.AsyncTask;
-import co.casterlabs.commons.async.queue.ThreadQueue;
+import co.casterlabs.commons.async.queue.ThreadExecutionQueue;
 import co.casterlabs.commons.ipc.IpcConnection;
 import co.casterlabs.commons.ipc.impl.subprocess.SubprocessIpcPrintPacket.PrintChannel;
 import co.casterlabs.commons.ipc.packets.IpcPacket;
@@ -21,7 +21,7 @@ import co.casterlabs.rakurai.json.element.JsonObject;
 import lombok.AllArgsConstructor;
 
 public class SubprocessIpcClientEntryPoint {
-    private static final ThreadQueue dispatchThread = new ThreadQueue();
+    private static final ThreadExecutionQueue dispatchThread = new ThreadExecutionQueue();
     private static final InputStream nativeIn = System.in;
     private static final PrintStream nativeOut = System.out;
     static final PrintStream nativeErr = System.err; // We use stderr for raw byte messages.

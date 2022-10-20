@@ -17,10 +17,10 @@ import java.util.function.Supplier;
  * SyncQueue simplifies running sync-critical code. (It synchronizes the timing
  * of execution)
  * 
- * @see {@link ThreadQueue} if you need to synchronize execution to a single
+ * @see {@link ThreadExecutionQueue} if you need to synchronize execution to a single
  *      thread.
  */
-public class SyncQueue implements ExecutionQueue {
+public class SyncExecutionQueue implements ExecutionQueue {
 
     @Override
     public <T> T execute(Supplier<T> task) {
