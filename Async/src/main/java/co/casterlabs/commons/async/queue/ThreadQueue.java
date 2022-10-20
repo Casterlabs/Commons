@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 import co.casterlabs.commons.async.AsyncTask;
 import co.casterlabs.commons.async.Promise;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 
 /**
  * ThreadQueue simplifies running thread-critical code. (It synchronizes the
@@ -27,7 +28,7 @@ import lombok.NonNull;
  * @see {@link SyncQueue} if you only need to synchronize the timing of
  *      execution.
  */
-public class ThreadQueue {
+public class ThreadQueue implements ExecutionQueue {
     private Impl impl;
 
     /**
@@ -50,80 +51,49 @@ public class ThreadQueue {
     }
 
     /* ---------------- */
-    /* Task Submission  */
+    /* Task Submission */
     /* ---------------- */
 
-    /**
-     * Submits a task to the thread without waiting for completion.
-     * 
-     * @param    task the task to submit.
-     * 
-     * @see           {@link #submitTaskAndWait(Runnable)} if you wish to wait for
-     *                completion.
-     * 
-     * @implNote      This method will synchronously call the task if the current
-     *                thread IS the execution thread.
-     */
-    public void submitTask(@NonNull Runnable task) {
-        if (isMainThread()) {
+    @Override
+    public void execute(@NonNull Runnable task) {
+        if (this.isMainThread()) {
             task.run();
-        } else {
-            this.impl.submitTask(task);
+        }
+
+        this.impl.submitTask(task);
+    }
+
+    @SneakyThrows // For the Promise `Throwable`.
+    @Override
+    public <T> T execute(Supplier<T> task) {
+        if (this.isMainThread()) {
+            return task.get();
+        }
+
+        try {
+            return this.executeWithPromise(task).await();
+        } catch (InterruptedException e) {
+            // Silently pass the interrupt.
+            Thread.currentThread().interrupt();
+            return null;
         }
     }
 
-    /**
-     * Submits a task to the thread and waits for completion.
-     * 
-     * @param    task the task to submit.
-     * 
-     * @see           {@link #submitTaskAndWait(Runnable)} if you don't wish to wait
-     *                for completion.
-     * 
-     * @implNote      This method will synchronously call the task if the current
-     *                thread IS the execution thread.
-     */
-    public void submitTaskAndWait(@NonNull Runnable task) throws InterruptedException, Throwable {
-        this.submitTaskWithPromise(task).await();
-    }
-
-    /**
-     * Submits a task to the thread, returning a {@link Promise}.
-     * 
-     * @param    task the task to submit.
-     * 
-     * @implNote      This method will synchronously call the task if the current
-     *                thread IS the execution thread.
-     */
-    public Promise<Void> submitTaskWithPromise(@NonNull Runnable task) {
-        return this.submitTaskWithPromise(() -> {
-            task.run();
-            return null;
-        });
-    }
-
-    /**
-     * Submits a task to the thread, returning a {@link Promise}.
-     * 
-     * @param    task the task to submit.
-     * 
-     * @implNote      This method will synchronously call the task if the current
-     *                thread IS the execution thread.
-     */
-    public <T> Promise<T> submitTaskWithPromise(@NonNull Supplier<T> task) {
-        if (isMainThread()) {
+    @Override
+    public <T> Promise<T> executeWithPromise(@NonNull Supplier<T> task) {
+        if (this.isMainThread()) {
             try {
                 return Promise.newResolved(task.get());
             } catch (Throwable t) {
                 return Promise.newRejected(t);
             }
-        } else {
-            return new Promise<T>(() -> task.get(), this::submitTask);
         }
+
+        return new Promise<T>(() -> task.get(), this::execute);
     }
 
     /* ---------------- */
-    /* Helpers          */
+    /* Helpers */
     /* ---------------- */
 
     /**
@@ -131,9 +101,9 @@ public class ThreadQueue {
      * new thread. This allows you to avoid potentially blocking the main thread for
      * long-running tasks.
      * 
-     * @param    task the task to execute off of the main thread.
+     * @param task the task to execute off of the main thread.
      * 
-     * @implNote      The spawned thread will be a daemon thread.
+     * @implNote The spawned thread will be a daemon thread.
      */
     public void executeOffOfMainThread(@NonNull Runnable task) {
         if (isMainThread()) {
@@ -159,7 +129,7 @@ public class ThreadQueue {
     }
 
     /* ---------------- */
-    /* Implementation   */
+    /* Implementation */
     /* ---------------- */
 
     /**
@@ -206,7 +176,8 @@ public class ThreadQueue {
                             System.err.println("An exception occurred whilst processing task in the queue:");
                             t.printStackTrace();
                         }
-                    } catch (NoSuchElementException ignored) {}
+                    } catch (NoSuchElementException ignored) {
+                    }
                 }
 
                 try {
