@@ -23,7 +23,7 @@ AsyncTask.create(() -> {
 Running sync-critical code:
 
 ```java
-SyncQueue queue = new SyncQueue();
+SyncExecutionQueue queue = new SyncExecutionQueue();
 
 try {
   queue.execute(() -> {
@@ -37,7 +37,7 @@ try {
 Running/Queuing thread-critical code:
 
 ```java
-ThreadQueue queue = new ThreadQueue();
+ThreadExecutionQueue queue = new ThreadExecutionQueue();
 
 queue.submitTask(() -> {
   // All tasks will be executed in order of submission.
@@ -46,12 +46,12 @@ queue.submitTask(() -> {
 // You can also use #submitTaskAndWait() or #submitTaskWithPromise().
 ```
 
-Using a ThreadQueue with a SWT Display:
+Using a ThreadExecutionQueue with a SWT Display:
 
 ```java
 Display display = ...
 
-ThreadQueue queue = new ThreadQueue(new ThreadQueue.Impl() {
+ThreadExecutionQueue queue = new ThreadExecutionQueue(new ThreadExecutionQueue.Impl() {
   @Override
   public void getThread() {
     return display.getThread();
