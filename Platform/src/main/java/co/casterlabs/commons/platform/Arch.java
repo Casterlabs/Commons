@@ -11,38 +11,41 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.platform;
 
+import java.nio.ByteOrder;
 import java.util.regex.Pattern;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 public enum Arch {
     // @formatter:off
 	
     // x86/64 family.
-    AMD64     ("amd64",    "amd64|x86_64"),
-    IA64      ("ia64",     "ia64"),
-    X86       ("x86",      "x86|i[0-9]86"),
+    X86_64    ("x86_64",  64, "amd64|x86_64"),
+    IA64      ("ia64",    64, "ia64|itanium64"),
+    X86       ("x86",     32, "x86|i[0-9]86|ia32"),
     
     // Arm family.
-    AARCH64   ("aarch64",  "arm64|aarch64"), // The Apple M1 chip series is aarch64.
-    ARM32     ("arm32",    "arm"),
+    AARCH64   ("aarch64", 64, "arm64|aarch64"), // Apple M1 chip series.
+    ARM       ("arm",     32, "arm"),
 
     // IBM's PowerPC architecture.
-    POWERPC64 ("ppc64",    "ppc64"),
-    POWERPC   ("ppc",      "ppc|power"),
+    PPC64     ("ppc64",   64, "ppc64"),
+    PPC       ("ppc",     32, "ppc|power"),
     
     // Miscellaneous.
     // We mostly lump these together because of their similarities.
-    RISC      ("risc",     "risc|mips|alpha|sparc"), 
+    RISC      ("risc",    -1, "risc|mips|alpha|sparc"), 
     
  ;
     // @formatter:on
 
     /**
-     * A standardized name for the architecture (e.g "amd64" or "aarch64").
+     * A standardized name for the architecture (e.g "x86_64" or "aarch64").
      */
     private String name;
+    private @Getter int wordSize;
     private String regex;
 
     static Arch get() {
@@ -60,13 +63,20 @@ public enum Arch {
     }
 
     /**
-     * See {@link #name}.
-     * 
      * @return the standardized name of the architecture
      */
     @Override
     public String toString() {
         return this.name;
+    }
+
+    /**
+     * @return whether or not the current machine's endianess is big endian.
+     * 
+     * @implNote This just calls {@link ByteOrder#nativeOrder()}.
+     */
+    public static boolean isBigEndian() {
+        return ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
     }
 
 }
