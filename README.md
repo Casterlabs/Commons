@@ -10,7 +10,9 @@ Select a subproject to get started.
 
 [Platform](/Platform/) &bull; OS & CPU arch detection.  
 [Async](/Async/) &bull; Threading & async helpers.  
-[Events](/Events/) &bull; Event helpers.
+[Events](/Events/) &bull; Event helpers.  
+[Functional](/Functional/) &bull; Functional code helpers.  
+[IPC](/IPC/) &bull; An in-progress IPC framework.
 
 ## Repository
 
@@ -59,7 +61,7 @@ resolvers += "jitpack" at "https://jitpack.io"
 
 ## Used by
 
--   Us :^)
+- Us :^)
 
 _Want your project included here? Open an issue and we'll add you ❤._
 
