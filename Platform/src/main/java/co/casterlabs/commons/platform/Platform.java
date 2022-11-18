@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.platform;
 
+import java.nio.ByteOrder;
+
 import lombok.NonNull;
 
 public class Platform {
@@ -73,6 +75,49 @@ public class Platform {
         }
 
         return libraryName;
+    }
+
+    /**
+     * @return   whether or not the current machine's endianess is big endian.
+     * 
+     * @implNote This just calls {@link ByteOrder#nativeOrder()}.
+     */
+    public static boolean isBigEndian() {
+        return ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
+    }
+
+    /**
+     * Tries to detect the processor's *current* word size or "bitness."
+     * 
+     * @return   The processor's word size, or -1 if unknown. Usually 32 or 64.
+     * 
+     * @implNote Some IBM Z mainframes will return 32 even though their words are 31
+     *           bits long.
+     */
+    public static int getWordSize() {
+        // Sources:
+        // https://www.oracle.com/java/technologies/hotspotfaq.html#64bit_detection:~:text=When%20writing%20Java%20code%2C%20how%20do%20I%20distinguish%20between%2032%20and%2064%2Dbit%20operation%3F
+        // https://stackoverflow.com/a/808314
+        // https://www.ibm.com/docs/en/sdk-java-technology/8?topic=dja-determining-whether-your-application-is-running-32-bit-31-bit-z-64-bit-jvm
+
+        String SADM = System.getProperty("sun.arch.data.model");
+        if ((SADM != null) && !SADM.equals("unknown")) {
+            return Integer.parseInt(SADM);
+        }
+
+        String CIVBM = System.getProperty("com.ibm.vm.bitmode");
+        if (CIVBM != null) {
+            return Integer.parseInt(CIVBM);
+        }
+
+        String vmName = System.getProperty("java.vm.name");
+        if (vmName.contains("64-bit")) {
+            return 64;
+        } else if (vmName.contains("32-bit")) {
+            return 32;
+        }
+
+        return -1;
     }
 
 }
