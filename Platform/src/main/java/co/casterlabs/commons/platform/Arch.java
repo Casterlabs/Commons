@@ -33,10 +33,22 @@ public enum Arch {
     // IBM's PowerPC architecture.
     PPC64     ("ppc64",   64, "ppc64"),
     PPC       ("ppc",     32, "ppc|power"),
-    
-    // Miscellaneous.
-    // We mostly lump these together because of their similarities.
-    RISC      ("risc",    -1, "risc|mips|alpha|sparc"), 
+
+    // Sun's Sparc architecture.
+    SPARCV9   ("sparcv9", 64, "sparcv9|sparc64"),
+    SPARC     ("sparc",   32, "sparc"),
+
+    // MIPS.
+    MIPS64   ("mips64",   64, "mips64"),
+    MIPS     ("mips",     32, "mips"),
+
+    // s390.
+    S390X   ("s390x",     64, "s390x"),
+    S390    ("s390",      32, "s390"),
+
+    // RISC-V.
+    RISCV64 ("riscv64",   64, "riscv64"),
+    RISCV   ("riscv",     32, "riscv"),
     
  ;
     // @formatter:on
