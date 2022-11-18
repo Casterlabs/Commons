@@ -69,7 +69,7 @@ public class Platform {
                 return String.format("%s.dll", libraryName);
 
             // Unix
-            case MACOSX:
+            case MACOS:
                 return String.format("%s.dylib", libraryName).toLowerCase();
 
             case BSD:

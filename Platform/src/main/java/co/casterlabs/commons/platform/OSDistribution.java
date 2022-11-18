@@ -33,7 +33,7 @@ public enum OSDistribution {
     WINDOWS_NT (WINDOWS, "Windows NT",  "win"),
 
 	// Unix
-    MACOSX     (UNIX,    "macOS",       "mac|darwin"),
+    MACOS      (UNIX,    "macOS",       "mac|darwin"),
     SOLARIS    (UNIX,    "Solaris",     "sun|solaris"),
     BSD        (UNIX,    "BSD",         "bsd"),
     LINUX      (UNIX,    "Linux",       "nux"),
