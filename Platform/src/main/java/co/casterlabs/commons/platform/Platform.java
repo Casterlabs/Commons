@@ -27,6 +27,21 @@ public class Platform {
     public static final OSDistribution osDistribution = OSDistribution.get(osFamily);
 
     /**
+     * Whether or not the current machine's endianess is big endian.
+     * 
+     * @implNote This just calls {@link ByteOrder#nativeOrder()}.
+     */
+    public static final boolean isBigEndian = ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
+
+    /**
+     * The processor's word size/bitness, or -1 if unknown. Usually 32 or 64.
+     * 
+     * @implNote Some IBM Z mainframes will return 32 even though their words are 31
+     *           bits long.
+     */
+    public static final int wordSize = _getWordSize();
+
+    /**
      * A convenience method for generating file names for OS-specific library files.
      * 
      * @param   libraryName The name of the library (e.g "WebView")
@@ -77,24 +92,11 @@ public class Platform {
         return libraryName;
     }
 
-    /**
-     * @return   whether or not the current machine's endianess is big endian.
-     * 
-     * @implNote This just calls {@link ByteOrder#nativeOrder()}.
-     */
-    public static boolean isBigEndian() {
-        return ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN;
-    }
+    /* ---------------- */
+    /* Static helpers   */
+    /* ---------------- */
 
-    /**
-     * Tries to detect the processor's *current* word size or "bitness."
-     * 
-     * @return   The processor's word size, or -1 if unknown. Usually 32 or 64.
-     * 
-     * @implNote Some IBM Z mainframes will return 32 even though their words are 31
-     *           bits long.
-     */
-    public static int getWordSize() {
+    private static int _getWordSize() {
         // Sources:
         // https://www.oracle.com/java/technologies/hotspotfaq.html#64bit_detection:~:text=When%20writing%20Java%20code%2C%20how%20do%20I%20distinguish%20between%2032%20and%2064%2Dbit%20operation%3F
         // https://stackoverflow.com/a/808314
