@@ -27,7 +27,7 @@ class _Util {
     }
 
     static Method deepMethodSearch(Class<?> clazz, String methodName, Class<?>[] expectedParameters)
-            throws NoSuchMethodException {
+        throws NoSuchMethodException {
         if (clazz == null) {
             String paramStr = Arrays.toString(expectedParameters);
             paramStr = paramStr.substring(1, paramStr.length() - 1);
