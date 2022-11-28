@@ -2,11 +2,11 @@ package co.casterlabs.commons.ipc.impl.subprocess;
 
 public abstract class SubprocessIpcClientHandler {
 
-    public final void sendMessage(Object message) {
+    public synchronized final void sendMessage(Object message) {
         SubprocessIpcClientEntryPoint.connection.sendMessage(message);
     }
 
-    public final void sendByteMessage(int type, byte[] message) {
+    public synchronized final void sendByteMessage(int type, byte[] message) {
         try {
             int length = message.length;
 

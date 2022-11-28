@@ -19,7 +19,6 @@ import java.util.Scanner;
 import co.casterlabs.commons.async.AsyncTask;
 import co.casterlabs.commons.async.queue.ThreadExecutionQueue;
 import co.casterlabs.commons.ipc.IpcConnection;
-import co.casterlabs.commons.ipc.impl.subprocess.SubprocessIpcClientEntryPoint.WrappedIpcConnection;
 import co.casterlabs.commons.ipc.packets.IpcPacket;
 import co.casterlabs.commons.ipc.packets.IpcPacket.IpcPacketType;
 import co.casterlabs.rakurai.json.Rson;
@@ -36,7 +35,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
     private OutputStream processIn;
     private Process process;
 
-    public final void sendMessage(Object message) {
+    public synchronized final void sendMessage(Object message) {
         this.connection.sendMessage(message);
     }
 
@@ -63,7 +62,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
     /* -------------------- */
 
     public SubprocessIpcHostHandler(@NonNull Class<? extends SubprocessIpcClientHandler> handlerClass)
-            throws IOException {
+        throws IOException {
         try {
             handlerClass.getConstructor();
         } catch (Exception e) {
@@ -73,11 +72,11 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
         List<String> exec = getExec(SubprocessIpcClientEntryPoint.class, handlerClass.getTypeName());
 
         this.process = new ProcessBuilder()
-                .command(exec)
-                .redirectError(Redirect.PIPE)
-                .redirectInput(Redirect.PIPE)
-                .redirectOutput(Redirect.PIPE)
-                .start();
+            .command(exec)
+            .redirectError(Redirect.PIPE)
+            .redirectInput(Redirect.PIPE)
+            .redirectOutput(Redirect.PIPE)
+            .start();
 
         InputStream proc_stdout = this.process.getInputStream();
         InputStream proc_stderr = this.process.getErrorStream();
@@ -89,8 +88,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
         AsyncTask.createNonDaemon(() -> {
             try {
                 this.process.waitFor();
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException e) {}
 
             this.onClose();
         });
@@ -126,8 +124,7 @@ public abstract class SubprocessIpcHostHandler implements Closeable {
 
                     byte[] buff = new byte[len];
                     if (proc_stderr.read(buff) < len) {
-                        throw new IOException(
-                                "Got less bytes than expected when reading from IPC process byte stream.");
+                        throw new IOException("Got less bytes than expected when reading from IPC process byte stream.");
                     }
 
                     int expectedNull = proc_stderr.read();
