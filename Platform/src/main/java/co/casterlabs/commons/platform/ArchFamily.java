@@ -16,52 +16,26 @@ import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public enum Arch {
+public enum ArchFamily {
     // @formatter:off
-	
-    // x86/64 family.
-    X86_64    ("x86_64",  "amd64|x86_64"),
-    IA64      ("ia64",    "ia64|itanium64"),
-    X86       ("x86",     "x86|i[0-9]86|ia32"),
-    
-    // Arm family.
-    AARCH64   ("aarch64", "arm64|aarch64"), // Apple M1 chip series.
-    ARM       ("arm",     "arm"),
-
-    // IBM's PowerPC architecture.
-    PPC64     ("ppc64",   "ppc64"),
-    PPC       ("ppc",     "ppc|power"),
-
-    // Sun's Sparc architecture.
-    SPARCV9   ("sparcv9", "sparcv9|sparc64"),
-    SPARC     ("sparc",   "sparc"),
-
-    // MIPS.
-    MIPS64   ("mips64",   "mips64"),
-    MIPS     ("mips",     "mips"),
-
-    // s390.
-    S390X   ("s390x",     "s390x"),
-    S390    ("s390",      "s390"),
-
-    // RISC-V.
-    RISCV64 ("riscv64",   "riscv64"),
-    RISCV   ("riscv",     "riscv"),
-    
- ;
+    X86   ("x86",   "x86|i[0-9]86|ia32|amd64|ia64|itanium64"),
+    ARM   ("arm",   "arm|aarch"),
+    PPC   ("ppc",   "ppc|power"),
+    SPARC ("sparc", "sparc"),
+    MIPS  ("mips",  "mips"),
+    S390  ("s390",  "s390"),
+    RISCV ("riscv", "riscv"),
+    ;
     // @formatter:on
 
-    /**
-     * A standardized name for the architecture (e.g "x86_64" or "aarch64").
-     */
     private String name;
     private String regex;
 
-    static Arch get() {
+    static ArchFamily get() {
         String osArch = System.getProperty("os.arch", "<blank>").toLowerCase();
 
         // Search the enums for a match, returning it.
-        for (Arch arch : values()) {
+        for (ArchFamily arch : values()) {
             if (Pattern.compile(arch.regex).matcher(osArch).find()) {
                 return arch;
             }
@@ -72,7 +46,7 @@ public enum Arch {
     }
 
     /**
-     * @return the standardized name of the architecture
+     * @return the standardized name of the architecture (e.g "x86" or "arm").
      */
     @Override
     public String toString() {

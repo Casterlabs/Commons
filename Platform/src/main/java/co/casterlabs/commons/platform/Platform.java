@@ -17,14 +17,12 @@ import lombok.NonNull;
 
 public class Platform {
 
-    /** The CPU Architecture of the host, e.g amd64 or aarch64. */
-    public static final Arch arch = Arch.get();
+    /* ---------------- */
+    /* CPU Architecture */
+    /* ---------------- */
 
-    /** The family of the host's OS, e.g macOS or Windows NT */
-    public static final OSFamily osFamily = OSFamily.get();
-
-    /** The family distribution of the host's OS, e.g Unix or Windows */
-    public static final OSDistribution osDistribution = OSDistribution.get(osFamily);
+    /** The CPU Architecture of the host, e.g x86 or arm. */
+    public static final ArchFamily archFamily = ArchFamily.get();
 
     /**
      * Whether or not the current machine's endianess is big endian.
@@ -40,6 +38,20 @@ public class Platform {
      *           bits long.
      */
     public static final int wordSize = _getWordSize();
+
+    /* ---------------- */
+    /* Operating System */
+    /* ---------------- */
+
+    /** The family of the host's OS, e.g macOS or Windows NT */
+    public static final OSFamily osFamily = OSFamily.get();
+
+    /** The family distribution of the host's OS, e.g Unix or Windows */
+    public static final OSDistribution osDistribution = OSDistribution.get(osFamily);
+
+    /* ---------------- */
+    /* Helpers          */
+    /* ---------------- */
 
     /**
      * A convenience method for generating file names for OS-specific library files.
@@ -95,7 +107,6 @@ public class Platform {
     /* ---------------- */
     /* Static helpers   */
     /* ---------------- */
-
     private static int _getWordSize() {
         // Sources:
         // https://www.oracle.com/java/technologies/hotspotfaq.html#64bit_detection:~:text=When%20writing%20Java%20code%2C%20how%20do%20I%20distinguish%20between%2032%20and%2064%2Dbit%20operation%3F
