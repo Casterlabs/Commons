@@ -131,6 +131,7 @@ public class Platform {
     /* ---------------- */
     /* Static helpers   */
     /* ---------------- */
+
     private static int _getWordSize() {
         // Sources:
         // https://www.oracle.com/java/technologies/hotspotfaq.html#64bit_detection:~:text=When%20writing%20Java%20code%2C%20how%20do%20I%20distinguish%20between%2032%20and%2064%2Dbit%20operation%3F
