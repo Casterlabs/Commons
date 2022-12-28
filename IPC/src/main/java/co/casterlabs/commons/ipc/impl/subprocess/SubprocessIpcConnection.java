@@ -225,7 +225,7 @@ public abstract class SubprocessIpcConnection implements Closeable {
         @Override
         protected void send(IpcPacket packet) {
 //            dispatchThread.execute(() -> {
-            _sendByteMessage(MESSAGE_PACKET_TYPE, Rson.DEFAULT.toJsonString(packet).getBytes());
+            _sendByteMessage(MESSAGE_PACKET_TYPE, Rson.DEFAULT.toJson(packet).toString(false).getBytes());
 //            });
         }
     }
