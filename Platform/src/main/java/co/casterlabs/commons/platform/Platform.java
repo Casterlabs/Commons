@@ -12,6 +12,7 @@ See the License for the specific language governing permissions and limitations 
 package co.casterlabs.commons.platform;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
@@ -107,6 +108,31 @@ public class Platform {
     }
 
     /**
+     * Tries to get the PID of the current running process.
+     * 
+     * @return   a long pointer of the pid.
+     * 
+     * @implNote On Java 9+ VMs this returns the value of
+     *           {@code ProcesHandle.current().pid();}, on Java 8 it returns a janky
+     *           value that may not work on some VMs, YMMV.
+     * 
+     * @implNote This value is not guaranteed.
+     */
+    public static long getPid() {
+        try {
+            Class<?> c_ProcessHandle = Class.forName("java.lang.ProcessHandle");
+            Object handle = c_ProcessHandle.getMethod("current").invoke(null);
+
+            return (long) c_ProcessHandle.getMethod("pid").invoke(handle);
+        } catch (Exception e) {
+            String name = ManagementFactory.getRuntimeMXBean().getName();
+            return Long.parseLong(
+                name.substring(0, name.indexOf('@'))
+            );
+        }
+    }
+
+    /**
      * 
      * @return                                 The commandline used to execute this
      *                                         exact process, can be used with
@@ -125,7 +151,7 @@ public class Platform {
     public static String tryGetCommandLine() throws IOException {
         switch (osFamily) {
             case UNIX: {
-                long pid = ProcessHandle.current().pid();
+                long pid = getPid();
                 Process proc = new ProcessBuilder()
                     .command("ps", "-p", String.valueOf(pid), "-o", "args")
                     .start();
@@ -137,7 +163,7 @@ public class Platform {
             }
 
             case WINDOWS: {
-                long pid = ProcessHandle.current().pid();
+                long pid = getPid();
                 Process proc = new ProcessBuilder()
                     .command("wmic", "process", "where", "processid=" + pid, "get", "commandline", "/format:list")
                     .start();
