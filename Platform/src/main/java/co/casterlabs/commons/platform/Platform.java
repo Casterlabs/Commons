@@ -12,19 +12,19 @@ See the License for the specific language governing permissions and limitations 
 package co.casterlabs.commons.platform;
 
 import java.nio.ByteOrder;
+import java.util.Collections;
+import java.util.List;
 
 import lombok.NonNull;
 
 public class Platform {
 
-    /** The CPU Architecture of the host, e.g amd64 or aarch64. */
-    public static final Arch arch = Arch.get();
+    /* ---------------- */
+    /* CPU Architecture */
+    /* ---------------- */
 
-    /** The family of the host's OS, e.g macOS or Windows NT */
-    public static final OSFamily osFamily = OSFamily.get();
-
-    /** The family distribution of the host's OS, e.g Unix or Windows */
-    public static final OSDistribution osDistribution = OSDistribution.get(osFamily);
+    /** The CPU Architecture of the host, e.g x86 or arm. */
+    public static final ArchFamily archFamily = ArchFamily.get();
 
     /**
      * Whether or not the current machine's endianess is big endian.
@@ -40,6 +40,42 @@ public class Platform {
      *           bits long.
      */
     public static final int wordSize = _getWordSize();
+
+    private static List<ArchExtensions> archExtensions;
+
+    /**
+     * The CPU Architecture extensions supported by the host, e.g x86_64 or armhf.
+     * 
+     * @implNote The lookup for this information can be a consuming task, hence why
+     *           this value isn't retrieved statically. The value is cached so that
+     *           calling getArchExtensions() multiple times will not affect
+     *           performance.
+     * 
+     * @apiNote  If a simple check will suffice, consider using the other
+     *           information available. For example, you can figure out if you're
+     *           running on x86_64 by doing
+     *           {@code archFamily == X86 && wordSize == 64}.
+     */
+    public static List<ArchExtensions> getArchExtensions() {
+        if (archExtensions == null) {
+            archExtensions = Collections.unmodifiableList(ArchExtensions.get());
+        }
+        return archExtensions;
+    }
+
+    /* ---------------- */
+    /* Operating System */
+    /* ---------------- */
+
+    /** The family of the host's OS, e.g macOS or Windows NT */
+    public static final OSFamily osFamily = OSFamily.get();
+
+    /** The family distribution of the host's OS, e.g Unix or Windows */
+    public static final OSDistribution osDistribution = OSDistribution.get(osFamily);
+
+    /* ---------------- */
+    /* Helpers          */
+    /* ---------------- */
 
     /**
      * A convenience method for generating file names for OS-specific library files.
