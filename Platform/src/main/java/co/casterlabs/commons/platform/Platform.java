@@ -13,6 +13,7 @@ package co.casterlabs.commons.platform;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 import lombok.NonNull;
 
@@ -129,8 +130,8 @@ public class Platform {
                     .command("ps", "-p", String.valueOf(pid), "-o", "args")
                     .start();
 
-                byte[] bytes = proc.getInputStream().readAllBytes();
-                String content = new String(bytes); // "COMMAND\n...."
+                // "COMMAND\n...."
+                String content = _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
 
                 return content.substring(content.indexOf('D') + 1).trim();
             }
@@ -141,8 +142,8 @@ public class Platform {
                     .command("wmic", "process", "where", "processid=" + pid, "get", "commandline", "/format:list")
                     .start();
 
-                byte[] bytes = proc.getInputStream().readAllBytes();
-                String content = new String(bytes); // "CommandLine=...."
+                // "CommandLine=...."
+                String content = _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
 
                 return content.substring(content.indexOf('=') + 1).trim();
             }
