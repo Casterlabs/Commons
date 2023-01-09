@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.platform;
 
+import java.io.IOException;
 import java.nio.ByteOrder;
 
 import lombok.NonNull;
@@ -102,6 +103,53 @@ public class Platform {
         }
 
         return libraryName;
+    }
+
+    /**
+     * 
+     * @return                                 The commandline used to execute this
+     *                                         exact process, can be used with
+     *                                         {@link Runtime#exec(String)} to spawn
+     *                                         a second process easily.
+     * 
+     * @implNote                               Windows editions < Win2000 will need
+     *                                         WMI installed as the WMIC command is
+     *                                         used to obtain process information.
+     * 
+     * @throws   IOException                   if an I/O error occurs.
+     * @throws   UnsupportedOperationException if either ProcessHandle isn't
+     *                                         supported or if the osFamily is not
+     *                                         one of UNIX or WINDOWS.
+     */
+    public static String tryGetCommandLine() throws IOException {
+        switch (osFamily) {
+            case UNIX: {
+                long pid = ProcessHandle.current().pid();
+                Process proc = new ProcessBuilder()
+                    .command("ps", "-p", String.valueOf(pid), "-o", "args")
+                    .start();
+
+                byte[] bytes = proc.getInputStream().readAllBytes();
+                String content = new String(bytes); // "COMMAND\n...."
+
+                return content.substring(content.indexOf('D') + 1).trim();
+            }
+
+            case WINDOWS: {
+                long pid = ProcessHandle.current().pid();
+                Process proc = new ProcessBuilder()
+                    .command("wmic", "process", "where", "processid=" + pid, "get", "commandline", "/format:list")
+                    .start();
+
+                byte[] bytes = proc.getInputStream().readAllBytes();
+                String content = new String(bytes); // "CommandLine=...."
+
+                return content.substring(content.indexOf('=') + 1).trim();
+            }
+
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     /* ---------------- */
