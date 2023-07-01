@@ -176,7 +176,7 @@ public class Platform {
                 } catch (IOException e) {
                     // Couldn't find WMIC, let's try Get-CimInstance.
                     Process proc = new ProcessBuilder()
-                        .command("powershell", "(Get-CimInstance Win32_Process -Filter \"ProcessId=$PID\").CommandLine")
+                        .command("powershell", "(Get-CimInstance Win32_Process -Filter \"ProcessId=" + pid + "\").CommandLine")
                         .start();
 
                     return _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
