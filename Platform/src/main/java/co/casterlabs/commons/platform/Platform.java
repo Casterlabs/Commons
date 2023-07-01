@@ -164,14 +164,23 @@ public class Platform {
 
             case WINDOWS: {
                 long pid = getPid();
-                Process proc = new ProcessBuilder()
-                    .command("wmic", "process", "where", "processid=" + pid, "get", "commandline", "/format:list")
-                    .start();
 
-                // "CommandLine=...."
-                String content = _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
+                try {
+                    Process proc = new ProcessBuilder()
+                        .command("wmic", "process", "where", "processid=" + pid, "get", "commandline", "/format:list")
+                        .start();
 
-                return content.substring(content.indexOf('=') + 1).trim();
+                    // "CommandLine=...."
+                    String content = _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
+                    return content.substring(content.indexOf('=') + 1).trim();
+                } catch (IOException e) {
+                    // Couldn't find WMIC, let's try Get-CimInstance.
+                    Process proc = new ProcessBuilder()
+                        .command("powershell", "(Get-CimInstance Win32_Process -Filter \"ProcessId=$PID\").CommandLine")
+                        .start();
+
+                    return _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
+                }
             }
 
             default:
