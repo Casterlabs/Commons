@@ -167,19 +167,27 @@ public class Platform {
 
                 try {
                     Process proc = new ProcessBuilder()
+                        .command(
+                            System.getenv("WINDIR") + "\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                            "(Get-CimInstance Win32_Process -Filter \"ProcessId=" + pid + "\").CommandLine"
+                        )
+                        .start();
+
+                    String content = _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
+                    if (proc.exitValue() != 0) {
+                        throw new IOException("Unknown command: " + content);
+                    }
+
+                    return content.trim();
+                } catch (IOException ignored) {
+                    // Fallback on the deprecated.
+                    Process proc = new ProcessBuilder()
                         .command("wmic", "process", "where", "processid=" + pid, "get", "commandline", "/format:list")
                         .start();
 
                     // "CommandLine=...."
                     String content = _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
                     return content.substring(content.indexOf('=') + 1).trim();
-                } catch (IOException e) {
-                    // Couldn't find WMIC, let's try Get-CimInstance.
-                    Process proc = new ProcessBuilder()
-                        .command("powershell", "(Get-CimInstance Win32_Process -Filter \"ProcessId=" + pid + "\").CommandLine")
-                        .start();
-
-                    return _PlatformUtil.readInputStreamString(proc.getInputStream(), StandardCharsets.UTF_8);
                 }
             }
 
