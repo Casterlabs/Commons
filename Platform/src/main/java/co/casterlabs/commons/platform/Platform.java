@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.List;
 
 import lombok.NonNull;
 
@@ -44,6 +46,28 @@ public class Platform {
      *           bits long.
      */
     public static final int wordSize = _PlatformUtil.getWordSize();
+
+    private static List<ArchExtensions> archExtensions;
+
+    /**
+     * @return   The CPU Architecture extensions supported by the host, e.g sse3 or
+     *           armhf.
+     * 
+     * @implNote The lookup for this information can be a consuming task, hence why
+     *           this value isn't retrieved statically. The value is cached so that
+     *           calling getArchExtensions() multiple times will not affect
+     *           performance.
+     * 
+     * @apiNote  If a simple check will suffice, consider using the other
+     *           information available. For example, you can figure out if you're
+     *           running on x86_64 by doing {@code archTarget == "x86_64"}.
+     */
+    public static List<ArchExtensions> getArchExtensions() {
+        if (archExtensions == null) {
+            archExtensions = Collections.unmodifiableList(ArchExtensions.get());
+        }
+        return archExtensions;
+    }
 
     /* ---------------- */
     /* Operating System */
