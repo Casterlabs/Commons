@@ -66,4 +66,44 @@ class _PlatformUtil {
         return -1;
     }
 
+    static String getArchTarget() {
+        // https://github.com/llvm/llvm-project/blob/main/llvm/include/llvm/TargetParser/Triple.h
+        switch (Platform.archFamily) {
+            case ARM:
+                return Platform.wordSize == 64 ? //
+                    (Platform.isBigEndian ? "arm" : "aarch64") : //
+                    (Platform.isBigEndian ? "armeb" : "arm");
+
+            case MIPS:
+                return Platform.wordSize == 64 ? //
+                    (Platform.isBigEndian ? "mips64" : "mips64el") : //
+                    (Platform.isBigEndian ? "mips" : "mipsel");
+
+            case PPC:
+                return Platform.wordSize == 64 ? //
+                    (Platform.isBigEndian ? "ppc64" : "ppc64le") : //
+                    (Platform.isBigEndian ? "ppc" : "ppcle");
+
+            case RISCV:
+                return Platform.wordSize == 64 ? "riscv64" : "riscv32";
+
+            case S390:
+                return "systemz"; // TODO LLVM appears to not have a s390x variant?
+
+            case SPARC:
+                return Platform.wordSize == 64 ? //
+                    ("sparcv9") : //
+                    (Platform.isBigEndian ? "sparc" : "sparcel");
+
+            case X86:
+                return Platform.wordSize == 64 ? "x86_64" : "x86";
+
+            // Don't create a `default:` entry.
+            // We want the compiler to warn us about missed values.
+
+        }
+
+        throw new RuntimeException("Unable to figure out LLVM for arch: " + Platform.archFamily);
+    }
+
 }
