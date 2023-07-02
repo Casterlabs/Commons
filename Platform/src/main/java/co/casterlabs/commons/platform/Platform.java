@@ -24,12 +24,6 @@ public class Platform {
     /* CPU Architecture */
     /* ---------------- */
 
-    /** The CPU Architecture of the host, e.g x86 or arm. */
-    public static final ArchFamily archFamily = ArchFamily.get();
-
-    /** A more familiar LLVM-like name, such as amd64 or x86_64. */
-    public static final String archTarget = _PlatformUtil.getArchTarget();
-
     /**
      * Whether or not the current machine's endianess is big endian.
      * 
@@ -44,6 +38,9 @@ public class Platform {
      *           bits long.
      */
     public static final int wordSize = _PlatformUtil.getWordSize();
+
+    /** The CPU Architecture of the host, e.g x86 or arm. */
+    public static final ArchFamily archFamily = ArchFamily.get();
 
     /* ---------------- */
     /* Operating System */

@@ -26,25 +26,25 @@ public enum OSDistribution {
     // @formatter:off
 
 	// DOS
-	MS_DOS     (DOS,     "MS-DOS",      "<manually detected>"),
+	MS_DOS     (DOS,     "MS-DOS",      "MSDOS",   "<manually detected>"),
 	
 	// Windows
-    WINDOWS_9X (WINDOWS, "Windows 9x",  "windows (95|98|me|ce)"),
-    WINDOWS_NT (WINDOWS, "Windows NT",  "win"),
+    WINDOWS_9X (WINDOWS, "Windows 9x",  "MSDOS",   "windows (95|98|me|ce)"),
+    WINDOWS_NT (WINDOWS, "Windows NT",  "Windows", "win"),
 
 	// Unix
-    MACOS      (UNIX,    "macOS",       "mac|darwin"),
-    SOLARIS    (UNIX,    "Solaris",     "sun|solaris"),
-    BSD        (UNIX,    "BSD",         "bsd"),
-    LINUX      (UNIX,    "Linux",       "nux"),
+    MACOS      (UNIX,    "macOS",       "macOS",   "mac|darwin"),
+    SOLARIS    (UNIX,    "Solaris",     "Solaris", "sun|solaris"),
+    BSD        (UNIX,    "BSD",         "BSD",     "bsd"),
+    LINUX      (UNIX,    "Linux",       "Linux",   "nux"),
 
     // VMS
-	OPEN_VMS   (VMS,     "OpenVMS",     "vms"),
+	OPEN_VMS   (VMS,     "OpenVMS",     "VMS",     "vms"),
 	
 	/**
 	 * This is the fallback, this is not to be considered to be a valid value.
 	 */
-    GENERIC    (null,    "Generic",     ""),
+    GENERIC    (null,    "Generic",     "Generic", ""),
     
     ;
     // @formatter:on
@@ -56,6 +56,12 @@ public enum OSDistribution {
      * A friendly name for the distribution (e.g "macOS" or "Windows NT").
      */
     public final String name;
+
+    /**
+     * A "standard" target name.
+     */
+    public final String target;
+
     private String regex;
 
     static OSDistribution get(OSFamily family) {
