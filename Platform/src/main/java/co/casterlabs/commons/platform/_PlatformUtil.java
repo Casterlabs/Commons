@@ -40,4 +40,30 @@ class _PlatformUtil {
         return new String(bytes, sourceCharset);
     }
 
+    static int getWordSize() {
+        // Sources:
+        // https://www.oracle.com/java/technologies/hotspotfaq.html#64bit_detection:~:text=When%20writing%20Java%20code%2C%20how%20do%20I%20distinguish%20between%2032%20and%2064%2Dbit%20operation%3F
+        // https://stackoverflow.com/a/808314
+        // https://www.ibm.com/docs/en/sdk-java-technology/8?topic=dja-determining-whether-your-application-is-running-32-bit-31-bit-z-64-bit-jvm
+
+        String SADM = System.getProperty("sun.arch.data.model");
+        if ((SADM != null) && !SADM.equals("unknown")) {
+            return Integer.parseInt(SADM);
+        }
+
+        String CIVBM = System.getProperty("com.ibm.vm.bitmode");
+        if (CIVBM != null) {
+            return Integer.parseInt(CIVBM);
+        }
+
+        String vmName = System.getProperty("java.vm.name");
+        if (vmName.contains("64-bit")) {
+            return 64;
+        } else if (vmName.contains("32-bit")) {
+            return 32;
+        }
+
+        return -1;
+    }
+
 }
