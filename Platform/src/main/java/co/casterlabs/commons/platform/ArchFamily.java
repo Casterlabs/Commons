@@ -101,7 +101,7 @@ public enum ArchFamily {
                     (isBigEndian ? "sparc" : "sparcel");
 
             case X86:
-                return Platform.wordSize == 64 ? "x86_64" : "x86";
+                return wordSize == 64 ? "x86_64" : "x86";
 
             // Don't create a `default:` entry.
             // We want the compiler to warn us about missed values.
