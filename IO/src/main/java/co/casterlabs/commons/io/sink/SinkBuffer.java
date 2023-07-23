@@ -79,6 +79,11 @@ public class SinkBuffer {
         return this.buffer.length;
     }
 
+    /**
+     * @throws SinkBuffereringError if there is not enough space in the buffer AND
+     *                              the strategy is
+     *                              {InsertionStrategy#THROW_ON_OVERFLOW}.
+     */
     public synchronized void insert(byte[] buf, int bufOffset, int amountToInsert) throws InterruptedException {
         try {
             if (this.buffer.length - this.amountBuffered < amountToInsert) {
@@ -105,6 +110,11 @@ public class SinkBuffer {
         }
     }
 
+    /**
+     * @throws SinkBuffereringError if there is not enough data in the buffer AND
+     *                              the strategy is
+     *                              {@link ExtractionStrategy#THROW_ON_UNDERRUN}.
+     */
     public synchronized void extract(byte[] buf, int bufOffset, int amountToExtract) throws InterruptedException {
         try {
             if (this.amountBuffered < amountToExtract) { // The while loop is for
