@@ -11,6 +11,7 @@
 		<module>Events</module>
 		<module>Functional</module>
 		<module>IPC</module>
+		<module>IO</module>
 	</modules>
 
 	<properties>
