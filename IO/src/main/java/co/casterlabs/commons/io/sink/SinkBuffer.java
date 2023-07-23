@@ -32,6 +32,7 @@ import lombok.NonNull;
  * <li>{@link ExtractionStrategy#NULL_ON_UNDERRUN}</li>
  * <li>{@link ExtractionStrategy#BLOCK_ON_UNDERRUN}</li>
  * <li>{@link ExtractionStrategy#THROW_ON_UNDERRUN}</li>
+ * <li>{@link ExtractionStrategy#LOOP_ON_UNDERRUN}</li>
  * </ul>
  */
 public class SinkBuffer {
