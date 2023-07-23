@@ -15,8 +15,8 @@ import lombok.Getter;
 import lombok.NonNull;
 
 /**
- * A SinkBuffer allows you to insert data at a reliable rate and read back the
- * data at a reliable rate. You can mix and match the strategies and set the
+ * A SinkBuffer allows you to insert data at a predictable rate and read back
+ * the data at a predictable rate. You can mix and match strategies and set the
  * internal buffer size to any value. <br />
  * <br />
  * 
