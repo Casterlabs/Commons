@@ -54,7 +54,7 @@ Replace `_VERSION` with the latest version or commit in this repo and make sure 
   ```xml
     <dependency>
         <groupId>co.casterlabs.Commons</groupId>
-        <artifactId>Async</artifactId>
+        <artifactId>Events</artifactId>
         <version>_VERSION</version>
     </dependency>
   ```
@@ -65,7 +65,7 @@ Replace `_VERSION` with the latest version or commit in this repo and make sure 
   
   ```gradle
 	dependencies {
-        implementation 'co.casterlabs:Commons.Async:_VERSION'
+        implementation 'co.casterlabs:Commons.Events:_VERSION'
 	}
   ```
 </details>
@@ -74,7 +74,7 @@ Replace `_VERSION` with the latest version or commit in this repo and make sure 
   <summary>SBT</summary>
   
   ```
-libraryDependencies += "co.casterlabs.Commons" % "Async" % "_VERSION"
+libraryDependencies += "co.casterlabs.Commons" % "Events" % "_VERSION"
   ```
 </details>
 
@@ -82,6 +82,6 @@ libraryDependencies += "co.casterlabs.Commons" % "Async" % "_VERSION"
   <summary>Leiningen</summary>
   
   ```
-:dependencies [[co.casterlabs.Commons/Async "_VERSION"]]	
+:dependencies [[co.casterlabs.Commons/Events "_VERSION"]]	
   ```
 </details>
