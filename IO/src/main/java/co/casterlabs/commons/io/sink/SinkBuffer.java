@@ -51,7 +51,7 @@ public class SinkBuffer {
     private int bufferReadPos = 0;
     private int bufferWritePos = 0;
 
-    public SinkBuffer(int bufferSize, @NonNull InsertionStrategy insertionStrategy, ExtractionStrategy extractionStrategy) {
+    public SinkBuffer(int bufferSize, @NonNull InsertionStrategy insertionStrategy, @NonNull ExtractionStrategy extractionStrategy) {
         this.buffer = new byte[bufferSize];
         this.insertionStrategy = insertionStrategy;
         this.extractionStrategy = extractionStrategy;
