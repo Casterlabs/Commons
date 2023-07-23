@@ -38,6 +38,7 @@ public enum InsertionStrategy {
      * exception.
      * 
      * @see {@link SinkBuffer}
+     * @see {@link BufferUnderrunError}
      */
     THROW_ON_OVERFLOW,
 

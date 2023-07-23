@@ -45,7 +45,7 @@ public class SinkBuffer {
 
     private final InsertionStrategy insertionStrategy;
     private final ExtractionStrategy extractionStrategy;
-    private final byte[] buffer; // lock.
+    private final byte[] buffer;
 
     private @Getter int amountBuffered = 0;
     private int bufferReadPos = 0;
@@ -61,25 +61,45 @@ public class SinkBuffer {
         return this.buffer.length;
     }
 
-    public void insert(byte[] buf, int bufOffset, int amountToInsert) throws InterruptedException {
-        synchronized (this.buffer) {
+    public synchronized void insert(byte[] buf, int bufOffset, int amountToInsert) throws InterruptedException {
+        try {
+            if (this.buffer.length - this.amountBuffered < amountToInsert) {
+                switch (this.insertionStrategy) {
+                    case BLOCK_ON_OVERFLOW: {
+                        do {
+                            this.wait(); // Wait for data to be consumed.
+                        } while (this.buffer.length - this.amountBuffered < amountToInsert); // Check and see if there's enough room yet.
+                        break; // Fall through to the below code.
+                    }
+
+                    case DROP_ON_OVERFLOW:
+                        amountToInsert = this.buffer.length - this.amountBuffered;
+                        break; // Fall through to the below code.
+
+                    case THROW_ON_OVERFLOW:
+                        throw new SinkBuffereringError();
+                }
+            }
+
             // TODO
+        } finally {
+            this.buffer.notifyAll();
         }
     }
 
-    public void extract(byte[] buf, int bufOffset, int amountToExtract) throws InterruptedException {
-        synchronized (this.buffer) {
+    public synchronized void extract(byte[] buf, int bufOffset, int amountToExtract) throws InterruptedException {
+        try {
             if (this.amountBuffered < amountToExtract) { // The while loop is for
                 switch (this.extractionStrategy) {
                     case BLOCK_ON_UNDERRUN: {
                         do {
-                            this.buffer.wait(); // Wait for new data to come in.
-                        } while (this.amountBuffered < amountToExtract); // Check and see if there's enough.
+                            this.wait(); // Wait for new data to come in.
+                        } while (this.amountBuffered < amountToExtract);// Check and see if there's enough room yet.
                         break; // Fall through to the below code.
                     }
 
                     case THROW_ON_UNDERRUN:
-                        throw new BufferUnderrunError();
+                        throw new SinkBuffereringError();
 
                     case NULL_ON_UNDERRUN: {
                         int amountAvailable = this.amountBuffered;
@@ -102,11 +122,12 @@ public class SinkBuffer {
                         }
                         return; // We're done!
                     }
-
                 }
             }
 
             // TODO
+        } finally {
+            this.buffer.notifyAll();
         }
     }
 
