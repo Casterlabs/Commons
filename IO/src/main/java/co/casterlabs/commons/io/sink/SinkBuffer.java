@@ -61,18 +61,20 @@ public class SinkBuffer {
         return this.buffer.length;
     }
 
-    public void insert(byte[] b, int off, int len) throws InterruptedException {
-        // TODO
+    public void insert(byte[] buf, int bufOffset, int amountToInsert) throws InterruptedException {
+        synchronized (this.buffer) {
+            // TODO
+        }
     }
 
-    public void extract(byte[] b, int off, int len) throws InterruptedException {
+    public void extract(byte[] buf, int bufOffset, int amountToExtract) throws InterruptedException {
         synchronized (this.buffer) {
-            if (this.amountBuffered < len) { // The while loop is for
+            if (this.amountBuffered < amountToExtract) { // The while loop is for
                 switch (this.extractionStrategy) {
                     case BLOCK_ON_UNDERRUN: {
                         do {
                             this.buffer.wait(); // Wait for new data to come in.
-                        } while (this.amountBuffered < len); // Check and see if there's enough.
+                        } while (this.amountBuffered < amountToExtract); // Check and see if there's enough.
                         break; // Fall through to the below code.
                     }
 
@@ -81,22 +83,22 @@ public class SinkBuffer {
 
                     case NULL_ON_UNDERRUN: {
                         int amountAvailable = this.amountBuffered;
-                        this.extract(b, off, amountAvailable);
+                        this.extract(buf, bufOffset, amountAvailable);
 
                         // Go over the remaining bytes and set them to 0.
-                        for (int arrIdx = off + amountAvailable; arrIdx < len; arrIdx++) {
-                            b[arrIdx] = this.nullValue;
+                        for (int arrIdx = bufOffset + amountAvailable; arrIdx < amountToExtract; arrIdx++) {
+                            buf[arrIdx] = this.nullValue;
                         }
                         return;
                     }
 
                     case LOOP_ON_UNDERRUN: {
-                        int remaining = len;
+                        int remaining = amountToExtract;
                         while (remaining > 0) {
-                            int toRead = Math.min(this.amountBuffered, remaining);
-                            remaining -= toRead;
-                            off += toRead;
-                            this.extract(b, off, toRead);
+                            int len = Math.min(this.amountBuffered, remaining);
+                            remaining -= len;
+                            bufOffset += len;
+                            this.extract(buf, bufOffset, len);
                         }
                         return; // We're done!
                     }
