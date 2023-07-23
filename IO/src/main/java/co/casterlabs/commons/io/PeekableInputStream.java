@@ -148,7 +148,7 @@ public class PeekableInputStream extends InputStream {
      * See: {@link InputStream#read(byte[], int, int)}
      */
     @Override
-    public synchronized int read(byte b[], int off, int len) throws IOException {
+    public synchronized int read(byte[] b, int off, int len) throws IOException {
         if (!this.hasDataBuffered()) {
             return this.wrapped.read(b, off, len);
         }
