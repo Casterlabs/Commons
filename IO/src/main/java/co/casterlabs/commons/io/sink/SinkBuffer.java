@@ -51,7 +51,24 @@ public class SinkBuffer {
     private int bufferReadPos = 0;
     private int bufferWritePos = 0;
 
+    /**
+     * @param    bufferSize               the size of the internal buffer. It is up
+     *                                    to you to properly estimate this value
+     *                                    ahead of time.
+     * @param    insertionStrategy
+     * @param    extractionStrategy
+     * 
+     * @throws   IllegalArgumentException if bufferSize is not greater than zero
+     * 
+     * @implNote                          Using both BLOCK_ON_OVERFLOW and
+     *                                    BLOCK_ON_UNDERRUN <i>may</i> result in
+     *                                    deadlocks. You have been warned.
+     */
     public SinkBuffer(int bufferSize, @NonNull InsertionStrategy insertionStrategy, @NonNull ExtractionStrategy extractionStrategy) {
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("Buffer size MUST be greater than zero");
+        }
+
         this.buffer = new byte[bufferSize];
         this.insertionStrategy = insertionStrategy;
         this.extractionStrategy = extractionStrategy;
