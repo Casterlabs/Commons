@@ -27,7 +27,7 @@ import lombok.NonNull;
  * <li>{@link InsertionStrategy#THROW_ON_OVERFLOW}</li>
  * </ul>
  * 
- * There are three extraction strategies:
+ * There are four extraction strategies:
  * <ul>
  * <li>{@link ExtractionStrategy#NULL_ON_UNDERRUN}</li>
  * <li>{@link ExtractionStrategy#BLOCK_ON_UNDERRUN}</li>
@@ -35,9 +35,21 @@ import lombok.NonNull;
  * </ul>
  */
 public class SinkBuffer {
+
+    /**
+     * If for some reason you need NULL_ON_UNDERRUN to use a different value than 0,
+     * change this. You probably don't need this.
+     */
+    @Deprecated
+    public byte nullValue = 0;
+
     private final InsertionStrategy insertionStrategy;
     private final ExtractionStrategy extractionStrategy;
-    private final byte[] buffer;
+    private final byte[] buffer; // lock.
+
+    private @Getter int amountBuffered = 0;
+    private int bufferReadPos = 0;
+    private int bufferWritePos = 0;
 
     public SinkBuffer(int bufferSize, @NonNull InsertionStrategy insertionStrategy, ExtractionStrategy extractionStrategy) {
         this.buffer = new byte[bufferSize];
@@ -45,13 +57,55 @@ public class SinkBuffer {
         this.extractionStrategy = extractionStrategy;
     }
 
+    public int getBufferSize() {
+        return this.buffer.length;
+    }
+
     public void insert(byte[] b, int off, int len) throws InterruptedException {
         // TODO
     }
 
     public void extract(byte[] b, int off, int len) throws InterruptedException {
-        // TODO
+        synchronized (this.buffer) {
+            if (this.amountBuffered < len) { // The while loop is for
+                switch (this.extractionStrategy) {
+                    case BLOCK_ON_UNDERRUN: {
+                        do {
+                            this.buffer.wait(); // Wait for new data to come in.
+                        } while (this.amountBuffered < len); // Check and see if there's enough.
+                        break; // Fall through to the below code.
+                    }
 
+                    case THROW_ON_UNDERRUN:
+                        throw new BufferUnderrunError();
+
+                    case NULL_ON_UNDERRUN: {
+                        int amountAvailable = this.amountBuffered;
+                        this.extract(b, off, amountAvailable);
+
+                        // Go over the remaining bytes and set them to 0.
+                        for (int arrIdx = off + amountAvailable; arrIdx < len; arrIdx++) {
+                            b[arrIdx] = this.nullValue;
+                        }
+                        return;
+                    }
+
+                    case LOOP_ON_UNDERRUN: {
+                        int remaining = len;
+                        while (remaining > 0) {
+                            int toRead = Math.min(this.amountBuffered, remaining);
+                            remaining -= toRead;
+                            off += toRead;
+                            this.extract(b, off, toRead);
+                        }
+                        return; // We're done!
+                    }
+
+                }
+            }
+
+            // TODO
+        }
     }
 
 }

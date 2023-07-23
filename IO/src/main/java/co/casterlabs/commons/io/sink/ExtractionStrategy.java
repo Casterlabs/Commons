@@ -38,7 +38,16 @@ public enum ExtractionStrategy {
      * exception and leave the buffer unconsumed.
      * 
      * @see {@link SinkBuffer}
+     * @see {@link BufferUnderrunError}
      */
     THROW_ON_UNDERRUN,
+
+    /**
+     * If there is not enough data in the buffer then extract() will continue
+     * looping over the buffer until the correct amount of data is read.
+     * 
+     * @see {@link SinkBuffer}
+     */
+    LOOP_ON_UNDERRUN,
 
 }
