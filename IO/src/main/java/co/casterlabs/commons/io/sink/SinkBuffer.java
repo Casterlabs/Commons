@@ -173,7 +173,23 @@ public class SinkBuffer {
                 }
             }
 
-            // TODO
+            int remainingValidInLine = this.buffer.length - this.bufferWritePos;
+            if (remainingValidInLine < amountToExtract) {
+                // We have to first split up our write since the buffer is not circular.
+                System.arraycopy(this.buffer, this.bufferReadPos, buf, bufOffset, remainingValidInLine);
+                this.bufferReadPos = 0;
+                this.amountBuffered -= remainingValidInLine;
+                bufOffset += remainingValidInLine;
+                amountToExtract -= remainingValidInLine; // We set all of these for the code below.
+            }
+
+            System.arraycopy(this.buffer, this.bufferReadPos, buf, bufOffset, amountToExtract);
+            this.bufferReadPos += amountToExtract;
+            this.amountBuffered -= amountToExtract;
+
+            if (this.bufferWritePos == this.buffer.length) {
+                this.bufferWritePos = 0; // Wrap around.
+            }
         } finally {
             this.notifyAll();
         }
