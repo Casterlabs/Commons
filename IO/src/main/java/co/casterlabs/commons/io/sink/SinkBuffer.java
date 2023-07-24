@@ -134,38 +134,46 @@ public class SinkBuffer {
     }
 
     /**
+     * 
+     * @return                      the amount of bytes placed in buf
+     * 
      * @throws SinkBuffereringError if there is not enough data in the buffer AND
      *                              the strategy is
      *                              {@link ExtractionStrategy#THROW_ON_UNDERRUN}.
      */
-    public synchronized void extract(byte[] buf, int bufOffset, int amountToExtract) throws InterruptedException {
+    public synchronized int extract(byte[] buf, int bufOffset, final int amountToExtract) throws InterruptedException {
         try {
             if (this.amountBuffered < amountToExtract) { // The while loop is for
                 switch (this.extractionStrategy) {
                     case BLOCK_ON_UNDERRUN: {
+                        int remaining = amountToExtract;
                         do {
-                            int chunk = Math.min(this.amountBuffered, amountToExtract);
+                            int chunk = Math.min(this.amountBuffered, remaining);
                             this.extract(buf, bufOffset, chunk);
                             bufOffset += chunk;
-                            amountToExtract -= chunk;
+                            remaining -= chunk;
                             this.wait(); // Wait for new data to come in.
-                        } while (this.amountBuffered < amountToExtract);// Check and see if there's enough room yet.
-                        break; // Fall through to the below code.
+                        } while (this.amountBuffered < remaining);// Check and see if there's enough room yet.
+
+                        return amountToExtract; // Fall through to the below code.
                     }
 
                     case THROW_ON_UNDERRUN:
                         throw new SinkBuffereringError();
 
                     case NULL_ON_UNDERRUN: {
+                        final int endPos = bufOffset + amountToExtract;
                         int amountAvailable = this.amountBuffered;
+
                         this.extract(buf, bufOffset, amountAvailable);
                         bufOffset += amountAvailable;
 
                         // Go over the remaining bytes and set them to 0.
-                        for (; bufOffset < amountToExtract; bufOffset++) {
+                        for (; bufOffset < endPos; bufOffset++) {
                             buf[bufOffset] = this.nullValue;
                         }
-                        return;
+
+                        return amountToExtract;
                     }
 
                     case LOOP_ON_UNDERRUN: {
@@ -180,28 +188,33 @@ public class SinkBuffer {
                             remaining -= len;
                             bufOffset += len;
                         }
-                        return; // We're done!
+
+                        return amountToExtract; // We're done!
                     }
                 }
             }
 
+            int remaining = amountToExtract;
+
             int remainingValidInLine = this.buffer.length - this.bufferReadPos;
-            if (remainingValidInLine < amountToExtract) {
+            if (remainingValidInLine < remaining) {
                 // We have to first split up our write since the buffer is not circular.
                 System.arraycopy(this.buffer, this.bufferReadPos, buf, bufOffset, remainingValidInLine);
                 this.bufferReadPos = 0;
                 this.amountBuffered -= remainingValidInLine;
                 bufOffset += remainingValidInLine;
-                amountToExtract -= remainingValidInLine; // We set all of these for the code below.
+                remaining -= remainingValidInLine; // We set all of these for the code below.
             }
 
-            System.arraycopy(this.buffer, this.bufferReadPos, buf, bufOffset, amountToExtract);
-            this.bufferReadPos += amountToExtract;
-            this.amountBuffered -= amountToExtract;
+            System.arraycopy(this.buffer, this.bufferReadPos, buf, bufOffset, remaining);
+            this.bufferReadPos += remaining;
+            this.amountBuffered -= remaining;
 
             if (this.bufferWritePos == this.buffer.length) {
                 this.bufferWritePos = 0; // Wrap around.
             }
+
+            return amountToExtract;
         } finally {
             this.notifyAll();
         }
