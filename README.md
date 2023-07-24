@@ -23,12 +23,12 @@ We use Jitpack for our deployment and hosting.
   <summary>Maven</summary>
   
   ```xml
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
   ```
 </details>
 
@@ -36,11 +36,11 @@ We use Jitpack for our deployment and hosting.
   <summary>Gradle</summary>
   
   ```gradle
-    allprojects {
-		repositories {
-			maven { url 'https://jitpack.io' }
-		}
+allprojects {
+	repositories {
+		maven { url 'https://jitpack.io' }
 	}
+}
   ```
 </details>
 
