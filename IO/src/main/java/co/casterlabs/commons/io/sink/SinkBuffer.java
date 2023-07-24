@@ -108,7 +108,23 @@ public class SinkBuffer {
                 }
             }
 
-            // TODO
+            int remainingSpace = this.buffer.length - this.bufferWritePos;
+            if (remainingSpace < amountToInsert) {
+                // We have to first split up our write since the buffer is not circular.
+                System.arraycopy(buf, bufOffset, this.buffer, this.bufferWritePos, remainingSpace);
+                this.bufferWritePos = 0;
+                this.amountBuffered += remainingSpace;
+                bufOffset += remainingSpace;
+                amountToInsert -= remainingSpace; // We set all of these for the code below.
+            }
+
+            System.arraycopy(buf, bufOffset, this.buffer, this.bufferWritePos, amountToInsert);
+            this.bufferWritePos += amountToInsert;
+            this.amountBuffered += amountToInsert;
+
+            if (this.bufferWritePos == this.buffer.length) {
+                this.bufferWritePos = 0; // Wrap around.
+            }
         } finally {
             this.notifyAll();
         }
