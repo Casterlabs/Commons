@@ -22,9 +22,9 @@ import lombok.NonNull;
  * 
  * There are three insertion strategies:
  * <ul>
- * <li>{@link InsertionStrategy#DROP_ON_OVERFLOW}</li>
- * <li>{@link InsertionStrategy#BLOCK_ON_OVERFLOW}</li>
- * <li>{@link InsertionStrategy#THROW_ON_OVERFLOW}</li>
+ * <li>{@link InsertionStrategy#DROP_ON_OVERRUN}</li>
+ * <li>{@link InsertionStrategy#BLOCK_ON_OVERRUN}</li>
+ * <li>{@link InsertionStrategy#THROW_ON_OVERRUN}</li>
  * </ul>
  * 
  * There are four extraction strategies:
@@ -61,11 +61,14 @@ public class SinkBuffer {
      * 
      * @throws   IllegalArgumentException if bufferSize is not greater than zero
      * 
-     * @implNote                          Using both BLOCK_ON_OVERFLOW and
+     * @implNote                          Using both BLOCK_ON_OVERRUN and
      *                                    BLOCK_ON_UNDERRUN <i>may</i> result in
      *                                    deadlocks. You have been warned.
      */
-    public SinkBuffer(int bufferSize, @NonNull InsertionStrategy insertionStrategy, @NonNull ExtractionStrategy extractionStrategy) {
+    public SinkBuffer(
+        int bufferSize, @NonNull InsertionStrategy insertionStrategy,
+        @NonNull ExtractionStrategy extractionStrategy
+    ) {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("Buffer size MUST be greater than zero");
         }
@@ -82,24 +85,25 @@ public class SinkBuffer {
     /**
      * @throws SinkBuffereringError if there is not enough space in the buffer AND
      *                              the strategy is
-     *                              {InsertionStrategy#THROW_ON_OVERFLOW}.
+     *                              {InsertionStrategy#THROW_ON_OVERRUN}.
      */
     public synchronized void insert(byte[] buf, int bufOffset, int amountToInsert) throws InterruptedException {
         try {
             if (this.buffer.length - this.amountBuffered < amountToInsert) {
                 switch (this.insertionStrategy) {
-                    case BLOCK_ON_OVERFLOW: {
+                    case BLOCK_ON_OVERRUN: {
                         do {
                             this.wait(); // Wait for data to be consumed.
-                        } while (this.buffer.length - this.amountBuffered < amountToInsert); // Check and see if there's enough room yet.
+                        } while (this.buffer.length - this.amountBuffered < amountToInsert); // Check and see if there's
+                                                                                             // enough room yet.
                         break; // Fall through to the below code.
                     }
 
-                    case DROP_ON_OVERFLOW:
+                    case DROP_ON_OVERRUN:
                         amountToInsert = this.buffer.length - this.amountBuffered;
                         break; // Fall through to the below code.
 
-                    case THROW_ON_OVERFLOW:
+                    case THROW_ON_OVERRUN:
                         throw new SinkBuffereringError();
                 }
             }

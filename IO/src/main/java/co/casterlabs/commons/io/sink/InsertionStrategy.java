@@ -23,7 +23,7 @@ public enum InsertionStrategy {
      * 
      * @see {@link SinkBuffer}
      */
-    DROP_ON_OVERFLOW,
+    DROP_ON_OVERRUN,
 
     /**
      * If there is not enough space in the buffer then insert() will block until
@@ -31,7 +31,7 @@ public enum InsertionStrategy {
      * 
      * @see {@link SinkBuffer}
      */
-    BLOCK_ON_OVERFLOW,
+    BLOCK_ON_OVERRUN,
 
     /**
      * If there is not enough space in the buffer then insert() will throw an
@@ -40,6 +40,6 @@ public enum InsertionStrategy {
      * @see {@link SinkBuffer}
      * @see {@link BufferUnderrunError}
      */
-    THROW_ON_OVERFLOW,
+    THROW_ON_OVERRUN,
 
 }
