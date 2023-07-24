@@ -50,4 +50,12 @@ public enum ExtractionStrategy {
      */
     LOOP_ON_UNDERRUN,
 
+    /**
+     * If there is not enough data in the buffer then extract() will only retrieve
+     * the total amount of data available.
+     * 
+     * @see {@link SinkBuffer}
+     */
+    SHRINK_ON_UNDERRUN,
+
 }

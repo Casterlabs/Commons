@@ -27,12 +27,13 @@ import lombok.NonNull;
  * <li>{@link InsertionStrategy#THROW_ON_OVERRUN}</li>
  * </ul>
  * 
- * There are four extraction strategies:
+ * There are five extraction strategies:
  * <ul>
  * <li>{@link ExtractionStrategy#NULL_ON_UNDERRUN}</li>
  * <li>{@link ExtractionStrategy#BLOCK_ON_UNDERRUN}</li>
  * <li>{@link ExtractionStrategy#THROW_ON_UNDERRUN}</li>
  * <li>{@link ExtractionStrategy#LOOP_ON_UNDERRUN}</li>
+ * <li>{@link ExtractionStrategy#SHRINK_ON_UNDERRUN}</li>
  * </ul>
  */
 public class SinkBuffer {
@@ -191,6 +192,9 @@ public class SinkBuffer {
 
                         return amountToExtract; // We're done!
                     }
+
+                    case SHRINK_ON_UNDERRUN:
+                        return this.extract(buf, bufOffset, this.amountBuffered);
                 }
             }
 
