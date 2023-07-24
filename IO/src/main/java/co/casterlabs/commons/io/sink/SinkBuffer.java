@@ -93,10 +93,13 @@ public class SinkBuffer {
                 switch (this.insertionStrategy) {
                     case BLOCK_ON_OVERRUN: {
                         do {
+                            int maxInsertable = Math.min(this.buffer.length - this.amountBuffered, amountToInsert);
+                            this.insert(buf, bufOffset, maxInsertable);
+                            bufOffset += maxInsertable;
+                            amountToInsert -= maxInsertable;
                             this.wait(); // Wait for data to be consumed.
-                        } while (this.buffer.length - this.amountBuffered < amountToInsert); // Check and see if there's
-                                                                                             // enough room yet.
-                        break; // Fall through to the below code.
+                        } while (0 < amountToInsert); // Check and see if we're done.
+                        return;
                     }
 
                     case DROP_ON_OVERRUN:
@@ -141,6 +144,10 @@ public class SinkBuffer {
                 switch (this.extractionStrategy) {
                     case BLOCK_ON_UNDERRUN: {
                         do {
+                            int chunk = Math.min(this.amountBuffered, amountToExtract);
+                            this.extract(buf, bufOffset, chunk);
+                            bufOffset += chunk;
+                            amountToExtract -= chunk;
                             this.wait(); // Wait for new data to come in.
                         } while (this.amountBuffered < amountToExtract);// Check and see if there's enough room yet.
                         break; // Fall through to the below code.
@@ -152,28 +159,33 @@ public class SinkBuffer {
                     case NULL_ON_UNDERRUN: {
                         int amountAvailable = this.amountBuffered;
                         this.extract(buf, bufOffset, amountAvailable);
+                        bufOffset += amountAvailable;
 
                         // Go over the remaining bytes and set them to 0.
-                        for (int arrIdx = bufOffset + amountAvailable; arrIdx < amountToExtract; arrIdx++) {
-                            buf[arrIdx] = this.nullValue;
+                        for (; bufOffset < amountToExtract; bufOffset++) {
+                            buf[bufOffset] = this.nullValue;
                         }
                         return;
                     }
 
                     case LOOP_ON_UNDERRUN: {
+                        byte[] contents = new byte[this.amountBuffered];
+                        this.extract(contents, 0, contents.length); // Get the actual content of the buffer.
+
                         int remaining = amountToExtract;
                         while (remaining > 0) {
-                            int len = Math.min(this.amountBuffered, remaining);
+                            int len = Math.min(contents.length, remaining);
+                            System.arraycopy(contents, 0, buf, bufOffset, len);
+
                             remaining -= len;
                             bufOffset += len;
-                            this.extract(buf, bufOffset, len);
                         }
                         return; // We're done!
                     }
                 }
             }
 
-            int remainingValidInLine = this.buffer.length - this.bufferWritePos;
+            int remainingValidInLine = this.buffer.length - this.bufferReadPos;
             if (remainingValidInLine < amountToExtract) {
                 // We have to first split up our write since the buffer is not circular.
                 System.arraycopy(this.buffer, this.bufferReadPos, buf, bufOffset, remainingValidInLine);
