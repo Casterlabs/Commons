@@ -13,6 +13,7 @@ Select a subproject to get started.
 [Events](/Events/) &bull; Event helpers.  
 [Functional](/Functional/) &bull; Functional code helpers.  
 [IPC](/IPC/) &bull; An in-progress IPC framework.
+[IO](/IO/) &bull; Utilties for handling information.
 
 ## Repository
 
