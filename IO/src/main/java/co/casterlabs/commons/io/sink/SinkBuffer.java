@@ -50,7 +50,7 @@ public class SinkBuffer {
 
     private @Getter int amountBuffered = 0;
     private int bufferReadPos = 0;
-    private int bufferWritePos = 0;
+    private int bufferWritePos = this.bufferReadPos; // MUST START AT THE SAME SPOT!
 
     /**
      * @param    bufferSize               the size of the internal buffer. It is up
@@ -110,7 +110,7 @@ public class SinkBuffer {
 
             // TODO
         } finally {
-            this.buffer.notifyAll();
+            this.notifyAll();
         }
     }
 
@@ -159,8 +159,37 @@ public class SinkBuffer {
 
             // TODO
         } finally {
-            this.buffer.notifyAll();
+            this.notifyAll();
         }
+    }
+
+    @Override
+    public synchronized String toString() {
+        String[] lines = {
+                "Buffer:        |", // 0
+                "Write Pointer:  ", // 1
+                "Read Pointer:   ", // 2
+        };
+
+        // Write the buffer data.
+        for (byte b : this.buffer) {
+            lines[0] += String.format(" %02x", b);
+        }
+        lines[0] += " |";
+
+        // Add the write pointer.
+        for (int i = 0; i < this.bufferWritePos; i++) {
+            lines[1] += "   ";
+        }
+        lines[1] += " ^";
+
+        // Add the read pointer.
+        for (int i = 0; i < this.bufferReadPos; i++) {
+            lines[2] += "   ";
+        }
+        lines[2] += " ^";
+
+        return String.join("\n", lines);
     }
 
 }
