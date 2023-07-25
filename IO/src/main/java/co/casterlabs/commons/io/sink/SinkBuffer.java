@@ -11,6 +11,9 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.io.sink;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -36,7 +39,7 @@ import lombok.NonNull;
  * <li>{@link ExtractionStrategy#SHRINK_ON_UNDERRUN}</li>
  * </ul>
  */
-public class SinkBuffer {
+public class SinkBuffer implements Closeable {
 
     /**
      * If for some reason you need NULL_ON_UNDERRUN to use a different value than 0,
@@ -44,6 +47,8 @@ public class SinkBuffer {
      */
     @Deprecated
     public byte nullValue = 0;
+
+    private @Getter boolean isOpen = true;
 
     private final InsertionStrategy insertionStrategy;
     private final ExtractionStrategy extractionStrategy;
@@ -79,6 +84,12 @@ public class SinkBuffer {
         this.extractionStrategy = extractionStrategy;
     }
 
+    private void _ensureOpen() throws IOException {
+        if (!this.isOpen) {
+            throw new IOException("The buffer has been closed.");
+        }
+    }
+
     public int getBufferSize() {
         return this.buffer.length;
     }
@@ -87,8 +98,12 @@ public class SinkBuffer {
      * @throws SinkBuffereringError if there is not enough space in the buffer AND
      *                              the strategy is
      *                              {InsertionStrategy#THROW_ON_OVERRUN}.
+     * 
+     * @throws IOException          if the buffer has been closed.
      */
-    public synchronized void insert(byte[] buf, int bufOffset, int amountToInsert) throws InterruptedException {
+    public synchronized void insert(byte[] buf, int bufOffset, int amountToInsert) throws InterruptedException, IOException {
+        this._ensureOpen();
+
         try {
             if (this.buffer.length - this.amountBuffered < amountToInsert) {
                 switch (this.insertionStrategy) {
@@ -98,7 +113,9 @@ public class SinkBuffer {
                             this.insert(buf, bufOffset, maxInsertable);
                             bufOffset += maxInsertable;
                             amountToInsert -= maxInsertable;
+
                             this.wait(); // Wait for data to be consumed.
+                            this._ensureOpen();
                         } while (0 < amountToInsert); // Check and see if we're done.
                         return;
                     }
@@ -141,8 +158,12 @@ public class SinkBuffer {
      * @throws SinkBuffereringError if there is not enough data in the buffer AND
      *                              the strategy is
      *                              {@link ExtractionStrategy#THROW_ON_UNDERRUN}.
+     * 
+     * @throws IOException          if the buffer has been closed.
      */
-    public synchronized int extract(byte[] buf, int bufOffset, final int amountToExtract) throws InterruptedException {
+    public synchronized int extract(byte[] buf, int bufOffset, final int amountToExtract) throws InterruptedException, IOException {
+        this._ensureOpen();
+
         try {
             if (this.amountBuffered < amountToExtract) { // The while loop is for
                 switch (this.extractionStrategy) {
@@ -153,7 +174,9 @@ public class SinkBuffer {
                             this.extract(buf, bufOffset, chunk);
                             bufOffset += chunk;
                             remaining -= chunk;
+
                             this.wait(); // Wait for new data to come in.
+                            this._ensureOpen();
                         } while (this.amountBuffered < remaining);// Check and see if there's enough room yet.
 
                         return amountToExtract; // Fall through to the below code.
@@ -251,6 +274,13 @@ public class SinkBuffer {
         lines[2] += " ^";
 
         return String.join("\n", lines);
+    }
+
+    @Override
+    public synchronized void close() throws IOException {
+        if (!this.isOpen) return;
+        this.isOpen = false;
+        this.notifyAll();
     }
 
 }

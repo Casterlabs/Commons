@@ -26,10 +26,10 @@ public class SinkUtil {
         Thread thread = new Thread(() -> {
             try {
                 byte[] buf;
-                while ((buf = producer.get()) != null) {
+                while ((buf = producer.get()) != null && sb.isOpen()) {
                     sb.insert(buf, 0, buf.length);
                 }
-            } catch (InterruptedException ignored) {}
+            } catch (IOException | InterruptedException ignored) {}
         });
         thread.setDaemon(false);
         thread.setName("SinkUtil | Supplier -> Sink | #" + num++);
@@ -38,10 +38,10 @@ public class SinkUtil {
 
     public static void drainInputStreamToSink(@NonNull InputStream in, @NonNull SinkBuffer sb) {
         Thread thread = new Thread(() -> {
-            byte[] buf = new byte[2048];
-            int read;
             try {
-                while ((read = in.read(buf)) != -1) {
+                byte[] buf = new byte[2048];
+                int read;
+                while ((read = in.read(buf)) != -1 && sb.isOpen()) {
                     sb.insert(buf, 0, read);
                 }
             } catch (IOException | InterruptedException ignored) {
@@ -59,10 +59,10 @@ public class SinkUtil {
 
     public static void drainSinkToOutputStream(@NonNull OutputStream out, @NonNull SinkBuffer sb) {
         Thread thread = new Thread(() -> {
-            byte[] buf = new byte[2048];
             try {
+                byte[] buf = new byte[2048];
                 int read;
-                while (true) {
+                while (sb.isOpen()) {
                     read = sb.extract(buf, 0, buf.length);
                     out.write(buf, 0, read);
                 }
@@ -81,17 +81,17 @@ public class SinkUtil {
 
     public static void drainSinkToConsumer(@NonNull Consumer<byte[]> consumer, @NonNull SinkBuffer sb) {
         Thread thread = new Thread(() -> {
-            byte[] buf = new byte[2048];
             try {
+                byte[] buf = new byte[2048];
                 int read;
-                while (true) {
+                while (sb.isOpen()) {
                     read = sb.extract(buf, 0, buf.length);
 
                     byte[] data = new byte[read];
                     System.arraycopy(buf, 0, data, 0, read);
                     consumer.accept(data);
                 }
-            } catch (InterruptedException ignored) {}
+            } catch (IOException | InterruptedException ignored) {}
         });
         thread.setDaemon(false);
         thread.setName("SinkUtil | Sink -> Consumer | #" + num++);
