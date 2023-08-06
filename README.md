@@ -12,7 +12,7 @@ Select a subproject to get started.
 [Async](/Async/) &bull; Threading & async helpers.  
 [Events](/Events/) &bull; Event helpers.  
 [Functional](/Functional/) &bull; Functional code helpers.  
-[IPC](/IPC/) &bull; An in-progress IPC framework.
+[IPC](/IPC/) &bull; An in-progress IPC framework.  
 [IO](/IO/) &bull; Utilties for handling information.
 
 ## Repository
