@@ -42,6 +42,9 @@ public class Platform {
     /** The CPU Architecture of the host, e.g x86 or arm. */
     public static final ArchFamily archFamily = ArchFamily.get();
 
+    /** The CPU Target of the host, e.g x86_64 or aarch64. */
+    public static final String archTarget = archFamily.getArchTarget(wordSize, isBigEndian);
+
     /* ---------------- */
     /* Operating System */
     /* ---------------- */
