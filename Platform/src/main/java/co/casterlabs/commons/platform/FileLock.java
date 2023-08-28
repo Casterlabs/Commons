@@ -63,7 +63,7 @@ public class FileLock {
                 return unix_inspect(file);
 
             default:
-                throw new RuntimeException("Unsupported osFamily: " + Platform.osFamily);
+                throw new UnsupportedOperationException("Unsupported osFamily: " + Platform.osFamily);
         }
     }
 
