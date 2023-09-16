@@ -18,9 +18,9 @@ import lombok.SneakyThrows;
 public abstract class SubprocessIpcHostHandler extends SubprocessIpcConnection {
     public static Supplier<String> javaCommandSupplier = () -> {
         String javaHome = System.getProperty("java.home");
-        return String.format("\"%s/bin/java\"", javaHome);
+        return String.format("%s/bin/java", javaHome);
     }; // Use this if Java 9+:
-       // String.format("\"%s\"", ProcessHandle.current().info().command().get())
+       // ProcessHandle.current().info().command().get()
 
     private Process process;
 
