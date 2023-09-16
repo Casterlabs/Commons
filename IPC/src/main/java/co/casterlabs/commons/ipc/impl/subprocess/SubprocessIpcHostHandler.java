@@ -9,12 +9,19 @@ import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import co.casterlabs.commons.async.AsyncTask;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
 public abstract class SubprocessIpcHostHandler extends SubprocessIpcConnection {
+    public static Supplier<String> javaCommandSupplier = () -> {
+        String javaHome = System.getProperty("java.home");
+        return String.format("\"%s/bin/java\"", javaHome);
+    }; // Use this if Java 9+:
+       // String.format("\"%s\"", ProcessHandle.current().info().command().get())
+
     private Process process;
 
     public final boolean isAlive() {
@@ -69,7 +76,6 @@ public abstract class SubprocessIpcHostHandler extends SubprocessIpcConnection {
     private static List<String> getExec(Class<?> main, String... programArgs) throws IOException {
         List<String> jvmArgs = ManagementFactory.getRuntimeMXBean().getInputArguments();
         String classpath = System.getProperty("java.class.path");
-        String javaHome = System.getProperty("java.home");
 
         String entry = System.getProperty("sun.java.command"); // Tested, present in OpenJDK and Oracle
         String[] launchArgs = entry.split(" ");
@@ -80,7 +86,7 @@ public abstract class SubprocessIpcHostHandler extends SubprocessIpcConnection {
 
         List<String> result = new ArrayList<>();
 
-        result.add(String.format("\"%s/bin/java\"", javaHome));
+        result.add(javaCommandSupplier.get());
         result.addAll(jvmArgs);
         result.add("-cp");
         result.add('"' + classpath + '"');
