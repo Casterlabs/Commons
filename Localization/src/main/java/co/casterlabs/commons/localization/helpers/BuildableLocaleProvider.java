@@ -53,7 +53,7 @@ public class BuildableLocaleProvider extends LocaleProvider {
         if (either.isA()) {
             return either.a();
         } else {
-            return either.b().apply(key, knownPlaceholders, knownComponents, externalLookup);
+            return either.b().apply(key, externalLookup, knownPlaceholders, knownComponents);
         }
     }
 
@@ -155,7 +155,7 @@ public class BuildableLocaleProvider extends LocaleProvider {
          * @implSpec Return null if you do not have a value.
          */
         // TODO keep this in sync with LocaleProvider#process
-        public @Nullable String apply(@NonNull String key, @NonNull Map<String, String> knownPlaceholders, @NonNull List<String> knownComponents, @NonNull LocaleProvider externalLookup);
+        public @Nullable String apply(@NonNull String key, @NonNull LocaleProvider externalLookup, @NonNull Map<String, String> knownPlaceholders, @NonNull List<String> knownComponents);
 
     }
 
