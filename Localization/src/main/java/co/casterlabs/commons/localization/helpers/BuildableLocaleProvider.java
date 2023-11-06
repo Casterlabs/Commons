@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * Use {@link Builder} to build your own instance.
@@ -57,6 +58,7 @@ public class BuildableLocaleProvider extends LocaleProvider {
         }
     }
 
+    @Accessors(chain = true)
     @NoArgsConstructor
     public static class Builder {
         private Map<String, Either<String, ProviderFunction>> hashes = new HashMap<>();
