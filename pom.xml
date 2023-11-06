@@ -12,6 +12,7 @@
 		<module>Functional</module>
 		<module>IPC</module>
 		<module>IO</module>
+		<module>Localization</module>
 	</modules>
 
 	<properties>
