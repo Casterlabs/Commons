@@ -9,7 +9,6 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import co.casterlabs.commons.functional.Either;
-import co.casterlabs.commons.functional.tuples.Pair;
 import co.casterlabs.commons.localization.LocaleProvider;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ import lombok.experimental.Accessors;
 public class BuildableLocaleProvider extends LocaleProvider {
     private final String prefix;
     private final Map<String, Either<String, ProviderFunction>> hashes;
-    private final Pair<String, Either<String, ProviderFunction>>[] regexes;
+    private final RegexEntry[] regexes;
 
     @Override
     public String prefix() {
@@ -38,11 +37,9 @@ public class BuildableLocaleProvider extends LocaleProvider {
 
         if (either == null) {
             // We don't have a hash entry, so look for a regex entry instead.
-            for (Pair<String, Either<String, ProviderFunction>> entry : this.regexes) {
-                String regex = entry.a();
-
-                if (key.matches(regex)) {
-                    either = entry.b();
+            for (RegexEntry entry : this.regexes) {
+                if (key.matches(entry.regex)) {
+                    either = entry.value;
                     break;
                 }
             }
@@ -62,7 +59,7 @@ public class BuildableLocaleProvider extends LocaleProvider {
     @NoArgsConstructor
     public static class Builder {
         private Map<String, Either<String, ProviderFunction>> hashes = new HashMap<>();
-        private List<Pair<String, Either<String, ProviderFunction>>> regexes = new LinkedList<>();
+        private List<RegexEntry> regexes = new LinkedList<>();
 
         private @Setter String prefix;
 
@@ -110,7 +107,7 @@ public class BuildableLocaleProvider extends LocaleProvider {
          * @return       this instance, for chaining.
          */
         public final Builder Rstring(@NonNull String regex, @NonNull String value) {
-            this.regexes.add(new Pair<>(regex, Either.newA(value)));
+            this.regexes.add(new RegexEntry(regex, Either.newA(value)));
             return this;
         }
 
@@ -132,21 +129,26 @@ public class BuildableLocaleProvider extends LocaleProvider {
          * @return          this instance, for chaining.
          */
         public final Builder Rfunction(@NonNull String regex, @NonNull ProviderFunction function) {
-            this.regexes.add(new Pair<>(regex, Either.newB(function)));
+            this.regexes.add(new RegexEntry(regex, Either.newB(function)));
             return this;
         }
 
         /**
          * @return a new {@link BuildableLocaleProvider}.
          */
-        @SuppressWarnings("unchecked")
         public BuildableLocaleProvider build() {
             return new BuildableLocaleProvider(
                 this.prefix,
                 new HashMap<String, Either<String, ProviderFunction>>(this.hashes),
-                (Pair<String, Either<String, ProviderFunction>>[]) this.regexes.toArray()
+                this.regexes.toArray(new RegexEntry[0])
             );
         }
+    }
+
+    @AllArgsConstructor
+    private static class RegexEntry {
+        private String regex;
+        private Either<String, ProviderFunction> value;
     }
 
     public static interface ProviderFunction {
