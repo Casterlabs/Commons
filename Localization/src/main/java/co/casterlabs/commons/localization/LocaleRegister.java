@@ -7,6 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 import lombok.NonNull;
 
+/**
+ * This class allows you to register several {@link LocaleProvider}s and
+ * automatically iterate over them for each process().
+ */
 public class LocaleRegister extends LocaleProvider {
     private final String prefix;
     private final LocaleProvider[] providers;
