@@ -24,6 +24,6 @@ jobs:
   
     - name: Build and deploy to GitHub Packages
       run: |
-        mvn deploy -DskipTests --settings .github/settings.xml
+        mvn -Dmaven.resolver.transport=wagon deploy -DskipTests --settings .github/settings.xml
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
