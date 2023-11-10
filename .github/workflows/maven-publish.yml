@@ -1,28 +1,43 @@
 name: Maven Publish
 
 on:
-  push:
-    branches:
-      - main  # Adjust to your main branch name
+    push:
+        branches:
+         - main
+    release:
+        types:
+         - created
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+    build:
+        runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v2
 
-    - name: Set up JDK
-      uses: actions/setup-java@v2
-      with:
-        distribution: 'temurin'
-        java-version: '8'
+        - name: Set up JDK
+          uses: actions/setup-java@v2
+          with:
+            distribution: 'temurin'
+            java-version: '8'
 
-    - name: Update the current version.
-      run: sh update-versions.sh $(git rev-parse --short HEAD)
-  
-    - name: Build and deploy to GitHub Packages
-      run: mvn --batch-mode -DuseGitHubPackages=true deploy
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        - name: Update the current version.
+          run: |
+                # Extract the tag or commit hash from GITHUB_REF
+                if [[ "$GITHUB_REF" =~ refs/tags/.* ]]; then
+                    # Extract the tag from GITHUB_REF
+                    VERSION=$(echo "${GITHUB_REF}" | sed -n 's|refs/tags/\(.*\)|\1|p')
+                else
+                    # Use the short commit hash as the version
+                    VERSION=$(git rev-parse --short HEAD)
+                fi
+
+                sh update-versions.sh "$VERSION"
+                echo ""
+                echo "Version has been updated to $VERSION.""
+    
+        - name: Build and deploy to GitHub Packages
+          run: mvn --batch-mode -DuseGitHubPackages=true deploy
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
