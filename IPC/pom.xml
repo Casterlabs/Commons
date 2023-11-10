@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>IPC</artifactId>
+	<artifactId>ipc</artifactId>
 
 	<parent>
 		<groupId>co.casterlabs</groupId>
-		<artifactId>Commons</artifactId>
+		<artifactId>commons</artifactId>
 		<version>1.6.0</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>co.casterlabs</groupId>
-			<artifactId>Async</artifactId>
+			<artifactId>async</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>compile</scope>
 		</dependency>
