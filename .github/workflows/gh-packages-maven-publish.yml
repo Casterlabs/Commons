@@ -1,4 +1,4 @@
-name: Maven Publish
+name: GitHub Packages Maven Publish
 
 on:
     push:
