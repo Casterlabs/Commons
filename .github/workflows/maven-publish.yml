@@ -1,0 +1,29 @@
+name: Maven Publish
+
+on:
+  push:
+    branches:
+      - main  # Adjust to your main branch name
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up JDK
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '11'
+
+    - name: Update the current version.
+      run: sh update-versions.sh $(git rev-parse --short HEAD)
+  
+    - name: Build and deploy to GitHub Packages
+      run: |
+        mvn deploy -DskipTests --settings .github/settings.xml
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
