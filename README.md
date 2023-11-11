@@ -8,12 +8,12 @@ We sort out the different utils into distinct packages, allowing you to pull in 
 
 Select a subproject to get started.
 
-[Platform](/Platform/) &bull; OS & CPU arch detection.  
-[Async](/Async/) &bull; Threading & async helpers.  
-[Events](/Events/) &bull; Event helpers.  
-[Functional](/Functional/) &bull; Functional code helpers.  
-[IPC](/IPC/) &bull; An in-progress IPC framework.  
-[IO](/IO/) &bull; Utilties for handling information.
+[Platform](/platform/) &bull; OS & CPU arch detection.  
+[Async](/async/) &bull; Threading & async helpers.  
+[Events](/events/) &bull; Event helpers.  
+[Functional](/functional/) &bull; Functional code helpers.  
+[IPC](/ipc/) &bull; An in-progress IPC framework.  
+[IO](/io/) &bull; Utilties for handling information.
 
 ## Repository
 
