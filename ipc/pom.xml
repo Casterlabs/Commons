@@ -3,7 +3,7 @@
 	<artifactId>ipc</artifactId>
 
 	<parent>
-		<groupId>co.casterlabs</groupId>
+		<groupId>co.casterlabs.commons</groupId>
 		<artifactId>commons</artifactId>
 		<version>1.6.0</version>
 		<relativePath>../pom.xml</relativePath>
@@ -11,14 +11,14 @@
 
 	<repositories>
 		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io</url>
+            <id>casterlabs-maven</id>
+            <url>https://repo.casterlabs.co/maven</url>
 		</repository>
 	</repositories>
 
 	<dependencies>
 		<dependency>
-			<groupId>co.casterlabs</groupId>
+			<groupId>co.casterlabs.commons</groupId>
 			<artifactId>async</artifactId>
 			<version>${project.parent.version}</version>
 			<scope>compile</scope>
@@ -31,9 +31,9 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>co.casterlabs.Rakurai</groupId>
-			<artifactId>Json</artifactId>
-			<version>1.17.8</version>
+			<groupId>co.casterlabs</groupId>
+			<artifactId>rson</artifactId>
+			<version>1fdef09</version> <!-- Still 1.17.8 -->
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
