@@ -17,7 +17,7 @@ Select a subproject to get started.
 
 ## Repository
 
-We use Jitpack for our deployment and hosting.
+We use GitHub packages + our own resolver for our deployment and hosting.
 
 <details>
   <summary>Maven</summary>
@@ -25,8 +25,8 @@ We use Jitpack for our deployment and hosting.
   ```xml
   <repositories>
     <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
+      <id>casterlabs-maven</id>
+      <url>https://repo.casterlabs.co/maven</url>
     </repository>
   </repositories>
   ```
@@ -38,7 +38,7 @@ We use Jitpack for our deployment and hosting.
   ```gradle
 allprojects {
 	repositories {
-		maven { url 'https://jitpack.io' }
+		maven { url 'https://repo.casterlabs.co/maven' }
 	}
 }
   ```
@@ -48,7 +48,7 @@ allprojects {
   <summary>SBT</summary>
   
   ```
-resolvers += "jitpack" at "https://jitpack.io"
+resolvers += "casterlabs-maven" at "https://repo.casterlabs.co/maven"
   ```
 </details>
 
@@ -56,7 +56,7 @@ resolvers += "jitpack" at "https://jitpack.io"
   <summary>Leiningen</summary>
   
   ```
-:repositories [["jitpack" "https://jitpack.io"]]
+:repositories [["casterlabs-maven" "https://repo.casterlabs.co/maven"]]
   ```
 </details>
 

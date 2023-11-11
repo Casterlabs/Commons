@@ -46,16 +46,16 @@ ep.on(CoffeeEventType.BREW_ERROR, (e) -> {
 
 ## Adding to your project
 
-Replace `_VERSION` with the latest version or commit in this repo and make sure to add the [Repository](https://github.com/Casterlabs/Commons#Repository) to your build system.
+Replace `VERSION_OR_HASH` with the latest version or commit in this repo and make sure to add the [Repository](https://github.com/Casterlabs/Commons#Repository) to your build system.
 
 <details>
   <summary>Maven</summary>
   
   ```xml
     <dependency>
-        <groupId>co.casterlabs.Commons</groupId>
+        <groupId>co.casterlabs.commons</groupId>
         <artifactId>Events</artifactId>
-        <version>_VERSION</version>
+        <version>VERSION_OR_HASH</version>
     </dependency>
   ```
 </details>
@@ -65,7 +65,7 @@ Replace `_VERSION` with the latest version or commit in this repo and make sure 
   
   ```gradle
 	dependencies {
-        implementation 'co.casterlabs:Commons.Events:_VERSION'
+        implementation 'co.casterlabs.commons:Events:VERSION_OR_HASH'
 	}
   ```
 </details>
@@ -74,7 +74,7 @@ Replace `_VERSION` with the latest version or commit in this repo and make sure 
   <summary>SBT</summary>
   
   ```
-libraryDependencies += "co.casterlabs.Commons" % "Events" % "_VERSION"
+libraryDependencies += "co.casterlabs.commons" % "Events" % "VERSION_OR_HASH"
   ```
 </details>
 
@@ -82,6 +82,6 @@ libraryDependencies += "co.casterlabs.Commons" % "Events" % "_VERSION"
   <summary>Leiningen</summary>
   
   ```
-:dependencies [[co.casterlabs.Commons/Events "_VERSION"]]	
+:dependencies [[co.casterlabs.commons/Events "VERSION_OR_HASH"]]	
   ```
 </details>
