@@ -35,7 +35,7 @@ jobs:
 
                 mvn versions:set -DnewVersion="$VERSION"
                 echo ""
-                echo "Version has been updated to $VERSION.""
+                echo "Version has been updated to $VERSION."
     
         - name: Build and deploy to GitHub Packages
           run: mvn --batch-mode -DuseGitHubPackages=true deploy
