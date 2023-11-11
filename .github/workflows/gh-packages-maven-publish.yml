@@ -38,6 +38,6 @@ jobs:
                 echo "Version has been updated to $VERSION."
     
         - name: Build and deploy to GitHub Packages
-          run: mvn --batch-mode -DuseGitHubPackages=true deploy
+          run: mvn --batch-mode deploy -DaltDeploymentRepository="github::default::https://maven.pkg.github.com/${{ github.repository_owner }}/${{ github.event.repository.name }}"
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
