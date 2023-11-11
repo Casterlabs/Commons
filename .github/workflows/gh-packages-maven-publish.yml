@@ -33,7 +33,7 @@ jobs:
                     VERSION=$(git rev-parse --short HEAD)
                 fi
 
-                sh update-versions.sh "$VERSION"
+                mvn versions:set -DnewVersion="$VERSION"
                 echo ""
                 echo "Version has been updated to $VERSION.""
     
