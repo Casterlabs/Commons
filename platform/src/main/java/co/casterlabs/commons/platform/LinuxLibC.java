@@ -18,7 +18,7 @@ public class LinuxLibC {
             throw new IllegalStateException("LinuxLibC is only supported on Linux.");
         }
 
-        java.lang.Process unameProc = Runtime.getRuntime().exec("uname -o");
+        Process unameProc = Runtime.getRuntime().exec("uname -o");
         String unameResult = _PlatformUtil.readInputStreamString(unameProc.getInputStream(), StandardCharsets.UTF_8);
 
         return unameResult.contains("GNU/");

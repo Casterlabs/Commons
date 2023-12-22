@@ -6,7 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import lombok.NonNull;
 
-public class Process {
+public class ProcessUtil {
 
     /**
      * Tries to kill the given process.
@@ -77,7 +77,7 @@ public class Process {
     public static String tryGetCommandLine(@NonNull String pid) throws IOException {
         switch (Platform.osFamily) {
             case UNIX: {
-                java.lang.Process proc = new ProcessBuilder()
+                Process proc = new ProcessBuilder()
                     .command("ps", "-p", String.valueOf(pid), "-o", "args")
                     .start();
 
@@ -89,7 +89,7 @@ public class Process {
 
             case WINDOWS: {
                 try {
-                    java.lang.Process proc = new ProcessBuilder()
+                    Process proc = new ProcessBuilder()
                         .command(
                             System.getenv("WINDIR") + "\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
                             "(Get-CimInstance Win32_Process -Filter \"ProcessId=" + pid + "\").CommandLine"
@@ -104,7 +104,7 @@ public class Process {
                     return content.trim();
                 } catch (IOException ignored) {
                     // Fallback on the deprecated.
-                    java.lang.Process proc = new ProcessBuilder()
+                    Process proc = new ProcessBuilder()
                         .command("wmic", "process", "where", "processid=" + pid, "get", "commandline", "/format:list")
                         .start();
 

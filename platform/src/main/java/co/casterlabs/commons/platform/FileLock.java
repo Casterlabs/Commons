@@ -73,7 +73,7 @@ public class FileLock {
 
     @SneakyThrows
     private static String[] unix_inspect(File file) {
-        java.lang.Process lsofProc = Runtime.getRuntime().exec(String.format("lsof \"%s\"", file.getAbsolutePath()));
+        Process lsofProc = Runtime.getRuntime().exec(String.format("lsof \"%s\"", file.getAbsolutePath()));
         String lsofResult = _PlatformUtil.readInputStreamString(lsofProc.getInputStream(), StandardCharsets.UTF_8);
 
         if (!lsofResult.contains("COMMAND")) {
@@ -119,7 +119,7 @@ public class FileLock {
 
     @SneakyThrows
     private static String[] windows_inspect(File file) {
-        java.lang.Process handleProc = Runtime.getRuntime().exec(String.format("%s -accepteula -nobanner -v -u \"%s\"", windows_handleExe.getAbsolutePath(), file.getAbsolutePath()));
+        Process handleProc = Runtime.getRuntime().exec(String.format("%s -accepteula -nobanner -v -u \"%s\"", windows_handleExe.getAbsolutePath(), file.getAbsolutePath()));
         String handleResult = _PlatformUtil.readInputStreamString(handleProc.getInputStream(), StandardCharsets.UTF_8);
 
         if (handleResult.contains("No matching handles found")) {
