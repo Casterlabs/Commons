@@ -11,30 +11,26 @@ See the License for the specific language governing permissions and limitations 
 */
 package co.casterlabs.commons.async;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 import lombok.NonNull;
 
 public class AsyncTask {
-    private static int taskId = 0;
+    private static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
 
-    private Thread t;
+    private Future<?> future;
 
-    private AsyncTask(@NonNull Runnable run, boolean daemon) {
-        this.t = new Thread(run);
-
-        this.t.setName("AsyncTask #" + taskId++);
-        this.t.setDaemon(daemon);
-        this.t.start();
+    private AsyncTask(@NonNull Runnable run) {
+        this.future = THREAD_POOL.submit(run);
     }
 
     /**
      * Cancels the task if not already completed.
      */
-    @SuppressWarnings("deprecation")
     public void cancel() {
-        if (this.t.isAlive()) {
-            this.t.interrupt();
-            this.t.stop();
-        }
+        this.future.cancel(true);
     }
 
     /**
@@ -45,18 +41,7 @@ public class AsyncTask {
      * @implNote     The spawned thread will be a daemon thread.
      */
     public static AsyncTask create(@NonNull Runnable run) {
-        return new AsyncTask(run, true);
-    }
-
-    /**
-     * Starts a new async task.
-     *
-     * @param    run the task to run
-     * 
-     * @implNote     The spawned thread will be a non-daemon thread.
-     */
-    public static AsyncTask createNonDaemon(@NonNull Runnable run) {
-        return new AsyncTask(run, false);
+        return new AsyncTask(run);
     }
 
 }
