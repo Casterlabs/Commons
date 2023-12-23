@@ -274,7 +274,7 @@ public class Promise<T> {
     }
 
     /* ---------------- */
-    /* .thenCatch() chaining */
+    /* .except() chaining */
     /* ---------------- */
 
     /**
@@ -289,7 +289,7 @@ public class Promise<T> {
      *           be of type R or T. You will have to check yourself and cast it to
      *           the appropriate type.
      */
-    public <R> Promise<?> thenCatch(@NonNull PromiseFunction<Throwable, R> handler) {
+    public <R> Promise<?> except(@NonNull PromiseFunction<Throwable, R> handler) {
         PromiseResolver<Object> subpromiseResolver = withResolvers();
         this.chainTo((result) -> {
             try {
@@ -318,8 +318,8 @@ public class Promise<T> {
      *           be of type Void or T. You will have to check yourself and cast it
      *           to the appropriate type.
      */
-    public Promise<?> thenCatch(@NonNull PromiseConsumer<Throwable> handler) {
-        return this.thenCatch((throwable) -> {
+    public Promise<?> except(@NonNull PromiseConsumer<Throwable> handler) {
+        return this.except((throwable) -> {
             handler.accept(throwable);
             return null;
         });
@@ -465,7 +465,7 @@ public class Promise<T> {
                             resolver.resolve(v);
                         } catch (IllegalStateException ignored) {} // Already settled.
                     })
-                    .thenCatch((t) -> {
+                    .except((t) -> {
                         try {
                             resolver.reject(t);
                         } catch (IllegalStateException ignored) {} // Already settled.
@@ -510,7 +510,7 @@ public class Promise<T> {
                             resolver.resolve(v);
                         } catch (IllegalStateException ignored) {} // Already settled.
                     })
-                    .thenCatch((t) -> {
+                    .except((t) -> {
                         if (rejectedCountDown.decrementAndGet() == 0) {
                             resolver.reject(new Exception("All Promises have rejected."));
                         }
