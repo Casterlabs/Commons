@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import co.casterlabs.commons.async.PromiseWithHandles;
+import co.casterlabs.commons.async.promise.Promise;
+import co.casterlabs.commons.async.promise.PromiseResolver;
 import co.casterlabs.commons.ipc.packets.IpcRemoteInvokePacket;
 import co.casterlabs.commons.ipc.packets.IpcResultPacket;
 import lombok.NonNull;
@@ -14,7 +15,7 @@ import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 
 class _RemoteObjectProxy implements MethodInterceptor {
-    private static final Map<String, PromiseWithHandles<IpcResultPacket>> waiting = new HashMap<>();
+    private static final Map<String, PromiseResolver<IpcResultPacket>> waiting = new HashMap<>();
 
     private String remoteInstanceId;
     private IpcConnection connection;
@@ -35,7 +36,7 @@ class _RemoteObjectProxy implements MethodInterceptor {
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         String waitingId = UUID.randomUUID().toString();
-        PromiseWithHandles<IpcResultPacket> promise = new PromiseWithHandles<>();
+        PromiseResolver<IpcResultPacket> resolver = Promise.withResolvers();
 
         // Send the packet.
         {
@@ -48,10 +49,10 @@ class _RemoteObjectProxy implements MethodInterceptor {
             }
 
             this.connection.send(new IpcRemoteInvokePacket(waitingId, this.remoteInstanceId, methodName, fauxArgs));
-            waiting.put(waitingId, promise); // Send succeeded, register waiting.
+            waiting.put(waitingId, resolver); // Send succeeded, register waiting.
         }
 
-        IpcResultPacket resultPacket = promise.await();
+        IpcResultPacket resultPacket = resolver.promise.await();
         waiting.remove(waitingId); // We've received our result, remove the wait.
 
         if (resultPacket.isSuccess()) {
@@ -65,7 +66,7 @@ class _RemoteObjectProxy implements MethodInterceptor {
     }
 
     static void fulfill(IpcResultPacket resultPacket) {
-        PromiseWithHandles<IpcResultPacket> promise = waiting.get(resultPacket.getWaitingId());
+        PromiseResolver<IpcResultPacket> promise = waiting.get(resultPacket.getWaitingId());
         if (promise == null) return; // Discard result.
 
         promise.resolve(resultPacket);
