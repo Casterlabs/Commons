@@ -106,7 +106,7 @@ public class Promise<T> {
     }
 
     public Promise(@NonNull PromiseRunnableWithHandle<T> task) {
-        this(task, AsyncTask::create);
+        this(task, AsyncTask::createNonDaemon);
     }
 
     public Promise(@NonNull PromiseRunnableWithHandle<T> task, @NonNull Consumer<Runnable> threadConstructor) {
