@@ -17,7 +17,8 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import co.casterlabs.commons.async.AsyncTask;
-import co.casterlabs.commons.async.Promise;
+import co.casterlabs.commons.async.promise.Promise;
+import co.casterlabs.commons.async.queue.ThreadExecutionQueue.Impl;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 
@@ -28,6 +29,7 @@ import lombok.SneakyThrows;
  * @see {@link SyncExecutionQueue} if you only need to synchronize the timing of
  *      execution.
  */
+@SuppressWarnings("unused")
 public class ThreadExecutionQueue implements ExecutionQueue {
     private Impl impl;
 
@@ -83,13 +85,13 @@ public class ThreadExecutionQueue implements ExecutionQueue {
     public <T> Promise<T> executeWithPromise(@NonNull Supplier<T> task) {
         if (this.isMainThread()) {
             try {
-                return Promise.newResolved(task.get());
+                return Promise.resolve(task.get());
             } catch (Throwable t) {
-                return Promise.newRejected(t);
+                return Promise.reject(t);
             }
         }
 
-        return new Promise<T>(() -> task.get(), this::execute);
+        return new Promise<T>((_unused) -> task.get(), this::execute);
     }
 
     /* ---------------- */
@@ -101,9 +103,9 @@ public class ThreadExecutionQueue implements ExecutionQueue {
      * new thread. This allows you to avoid potentially blocking the main thread for
      * long-running tasks.
      * 
-     * @param task the task to execute off of the main thread.
+     * @param    task the task to execute off of the main thread.
      * 
-     * @implNote The spawned thread will be a daemon thread.
+     * @implNote      The spawned thread will be a daemon thread.
      */
     public void executeOffOfMainThread(@NonNull Runnable task) {
         if (isMainThread()) {
@@ -176,8 +178,7 @@ public class ThreadExecutionQueue implements ExecutionQueue {
                             System.err.println("An exception occurred whilst processing task in the queue:");
                             t.printStackTrace();
                         }
-                    } catch (NoSuchElementException ignored) {
-                    }
+                    } catch (NoSuchElementException ignored) {}
                 }
 
                 try {

@@ -2,7 +2,7 @@ package co.casterlabs.commons.async.queue;
 
 import java.util.function.Supplier;
 
-import co.casterlabs.commons.async.Promise;
+import co.casterlabs.commons.async.promise.Promise;
 
 /**
  * An interface for implementing a queue that guarantees an order-of-execution.
