@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.casterlabs.commons</groupId>
 	<artifactId>commons</artifactId>
-	<version>LATEST</version>
+	<version>PLACEHOLDER</version>
 	<packaging>pom</packaging>
 
 	<modules>
