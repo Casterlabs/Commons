@@ -1,9 +1,9 @@
 package co.casterlabs.commons.platform;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * This class allows you to detect whether or not a machine uses GNU or MUSL
@@ -42,8 +42,10 @@ public class LinuxLibC {
     }
 
     private static boolean isGNUViaFS() throws IOException {
-        String ldd = Files.readString(Path.of("/usr/bin/ldd"));
-        return ldd.contains("GNU C Library");
+        try (FileInputStream fin = new FileInputStream(new File("/usr/bin/ldd"))) {
+            String ldd = _PlatformUtil.readInputStreamString(fin, StandardCharsets.UTF_8);
+            return ldd.contains("GNU C Library");
+        }
     }
 
     private static boolean isGNUViaCommand() throws IOException {
