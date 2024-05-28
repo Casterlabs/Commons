@@ -2,11 +2,15 @@ package co.casterlabs.commons.platform;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * This class allows you to detect whether or not a machine uses GNU or MUSL
  * Libc.
  */
+// Code adapted from here:
+// https://github.com/lovell/detect-libc/blob/main/lib/detect-libc.js
 public class LinuxLibC {
 
     /**
@@ -18,10 +22,35 @@ public class LinuxLibC {
             throw new IllegalStateException("LinuxLibC is only supported on Linux.");
         }
 
-        Process unameProc = Runtime.getRuntime().exec("uname -o");
+        if ("true".equalsIgnoreCase(System.getProperty("casterlabs.commons.forcegnu"))) {
+            return true;
+        }
+
+        try {
+            return isGNUViaFS();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            return isGNUViaCommand();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    private static boolean isGNUViaFS() throws IOException {
+        String ldd = Files.readString(Path.of("/usr/bin/ldd"));
+        return ldd.contains("GNU C Library");
+    }
+
+    private static boolean isGNUViaCommand() throws IOException {
+        Process unameProc = Runtime.getRuntime().exec("sh -c 'getconf GNU_LIBC_VERSION 2>&1 || true; ldd --version 2>&1 || true'");
         String unameResult = _PlatformUtil.readInputStreamString(unameProc.getInputStream(), StandardCharsets.UTF_8);
 
-        return unameResult.contains("GNU/");
+        return unameResult.contains("glibc");
     }
 
 }
