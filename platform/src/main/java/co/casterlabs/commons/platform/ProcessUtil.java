@@ -92,6 +92,7 @@ public class ProcessUtil {
                     Process proc = new ProcessBuilder()
                         .command(
                             System.getenv("WINDIR") + "\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+                            "-NoProfile",
                             "(Get-CimInstance Win32_Process -Filter \"ProcessId=" + pid + "\").CommandLine"
                         )
                         .start();
