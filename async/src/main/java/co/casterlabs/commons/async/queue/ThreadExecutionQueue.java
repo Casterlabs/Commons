@@ -17,6 +17,7 @@ import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 import co.casterlabs.commons.async.AsyncTask;
+import co.casterlabs.commons.async.Lock;
 import co.casterlabs.commons.async.promise.Promise;
 import co.casterlabs.commons.async.queue.ThreadExecutionQueue.Impl;
 import lombok.NonNull;
@@ -26,9 +27,12 @@ import lombok.SneakyThrows;
  * ThreadQueue simplifies running thread-critical code. (It synchronizes the
  * thread of execution)
  * 
- * @see {@link SyncExecutionQueue} if you only need to synchronize the timing of
- *      execution.
+ * @see        {@link SyncExecutionQueue} if you only need to synchronize the
+ *             timing of execution.
+ * 
+ * @deprecated Use {@link Lock}
  */
+@Deprecated
 @SuppressWarnings("unused")
 public class ThreadExecutionQueue implements ExecutionQueue {
     private Impl impl;

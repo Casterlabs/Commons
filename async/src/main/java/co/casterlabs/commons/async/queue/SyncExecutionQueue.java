@@ -13,13 +13,18 @@ package co.casterlabs.commons.async.queue;
 
 import java.util.function.Supplier;
 
+import co.casterlabs.commons.async.Lock;
+
 /**
  * SyncQueue simplifies running sync-critical code. (It synchronizes the timing
  * of execution)
  * 
- * @see {@link ThreadExecutionQueue} if you need to synchronize execution to a single
- *      thread.
+ * @see        {@link ThreadExecutionQueue} if you need to synchronize execution
+ *             to a single thread.
+ * 
+ * @deprecated Use {@link Lock}
  */
+@Deprecated
 public class SyncExecutionQueue implements ExecutionQueue {
 
     @Override
