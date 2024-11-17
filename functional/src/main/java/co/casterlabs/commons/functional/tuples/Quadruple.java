@@ -35,7 +35,7 @@ public class Quadruple<A, B, C, D> extends Tuple {
     }
 
     public D d() {
-        return this.get(2);
+        return this.get(3);
     }
 
 }
