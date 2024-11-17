@@ -19,6 +19,10 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.NonNull;
 
+/**
+ * @apiNote It is probably better that you use Thread.ofVirtual() if your JVM
+ *          supports it.
+ */
 public class AsyncTask {
     private static final ExecutorService DAEMON_THREAD_POOL = new ThreadPoolExecutor(
         0, Integer.MAX_VALUE,
