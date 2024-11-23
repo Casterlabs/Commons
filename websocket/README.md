@@ -7,7 +7,6 @@ An experimental WebSocket implementation. Not recommended for production use as 
 ```java
 WebSocketClient client = new WebSocketClient(URI.create("wss://echo.casterlabs.co"));
 client.setListener(new WebSocketListener() {
-    @SneakyThrows
     @Override
     public void onOpen(WebSocketClient client, Map<String, String> headers, @Nullable String acceptedProtocol) {
         System.out.println("Connected. Headers: " + headers);
