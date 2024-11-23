@@ -61,15 +61,6 @@ public class WebSocketClient implements Closeable {
     }
 
     public WebSocketClient(@NonNull URI uri, @NonNull Map<String, String> additionalHeaders, @NonNull List<String> acceptedProtocols) {
-        // These headers can be overwritten
-        this.connectionHeaders.put("User-Agent".toLowerCase(), "Casterlabs/Commons-WebSocket");
-
-        this.connectionHeaders.putAll(additionalHeaders); // Override.
-
-        // These headers must NOT be overwritten.
-        this.connectionHeaders.put("Connection".toLowerCase(), "Upgrade");
-        this.connectionHeaders.put("Upgrade".toLowerCase(), "websocket");
-        this.connectionHeaders.put("Sec-WebSocket-Version".toLowerCase(), "13");
 
         String httpHost = uri.getHost();
         int port;
@@ -91,7 +82,6 @@ public class WebSocketClient implements Closeable {
             httpHost += ':';
             httpHost += uri.getPort();
         }
-        this.connectionHeaders.put("Host".toLowerCase(), httpHost);
 
         this.address = new InetSocketAddress(uri.getHost(), port);
 
@@ -104,6 +94,17 @@ public class WebSocketClient implements Closeable {
         }
 
         this.path = httpPath;
+
+        // These headers can be overwritten
+        this.connectionHeaders.put("User-Agent".toLowerCase(), "Casterlabs/Commons-WebSocket");
+        this.connectionHeaders.put("Host".toLowerCase(), httpHost);
+
+        this.connectionHeaders.putAll(additionalHeaders); // Override.
+
+        // These headers must NOT be overwritten.
+        this.connectionHeaders.put("Connection".toLowerCase(), "Upgrade");
+        this.connectionHeaders.put("Upgrade".toLowerCase(), "websocket");
+        this.connectionHeaders.put("Sec-WebSocket-Version".toLowerCase(), "13");
 
         if (acceptedProtocols != null && !acceptedProtocols.isEmpty()) {
             this.connectionHeaders.put("Sec-WebSocket-Protocol".toLowerCase(), String.join(", ", acceptedProtocols));
@@ -328,6 +329,7 @@ public class WebSocketClient implements Closeable {
             String acceptedProtocol = headers.get("Sec-WebSocket-Protocol".toLowerCase());
 
             this.state = State.CONNECTED;
+            this.listener.onOpen(this, headers, acceptedProtocol);
 
             this.pingThread = this.threadFactory.newThread(this::doPing);
             this.pingThread.setName("WebSocket Client Ping Thread - " + this.address);
@@ -335,7 +337,6 @@ public class WebSocketClient implements Closeable {
 
             this.readThread = this.threadFactory.newThread(() -> {
                 try {
-                    this.listener.onOpen(this, headers, acceptedProtocol);
                     this.doRead();
                 } catch (Throwable t) {
                     this.listener.onException(t);
