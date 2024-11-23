@@ -27,7 +27,7 @@ client.setListener(new WebSocketListener() {
         System.out.println("Closed");
     }
 });
-client.connect();
+client.connect(10_000, 5_000);
 
 Scanner in = new Scanner(System.in);
 while (true) {

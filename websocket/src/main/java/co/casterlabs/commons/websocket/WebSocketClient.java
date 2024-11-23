@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.net.SocketFactory;
@@ -30,8 +29,6 @@ import lombok.NonNull;
 import lombok.Setter;
 
 public class WebSocketClient implements Closeable {
-    private static final long PING_INTERVAL = TimeUnit.SECONDS.toMillis(5);
-
     private final ReentrantLock lock = new ReentrantLock();
 
     private @Setter int maxPayloadLength = 16 /*mb*/ * 1024 * 1024;
@@ -128,12 +125,12 @@ public class WebSocketClient implements Closeable {
         return (T) this.attachment;
     }
 
-    private void doPing() {
+    private void doPing(long timeout) {
         try {
             while (true) {
                 byte[] someBytes = PrimitiveMarshall.BIG_ENDIAN.longToBytes(System.currentTimeMillis());
                 this.sendFrame(true, WebsocketOpCode.PING, someBytes);
-                Thread.sleep(PING_INTERVAL);
+                Thread.sleep(timeout);
             }
         } catch (Exception ignored) {
             this.readThread.interrupt();
@@ -289,15 +286,15 @@ public class WebSocketClient implements Closeable {
         }
     }
 
-    public void connect() throws IOException {
+    public void connect(long timeout, long pingInterval) throws IOException {
         this.lock.lock();
         try {
             if (this.state != State.NEVER_CONNECTED) throw new IllegalStateException("Current state is: " + this.state);
             this.state = State.CONNECTING;
 
             this.socket = this.socketFactory.createSocket();
-            this.socket.connect(this.address, (int) (PING_INTERVAL * 4));
-            this.socket.setSoTimeout((int) (PING_INTERVAL * 2));
+            this.socket.connect(this.address, (int) timeout);
+            this.socket.setSoTimeout((int) timeout);
             this.socket.setTcpNoDelay(true);
 
             this.inputStream = new OverzealousInputStream(this.socket.getInputStream());
@@ -331,7 +328,7 @@ public class WebSocketClient implements Closeable {
             this.state = State.CONNECTED;
             this.listener.onOpen(this, headers, acceptedProtocol);
 
-            this.pingThread = this.threadFactory.newThread(this::doPing);
+            this.pingThread = this.threadFactory.newThread(() -> this.doPing(pingInterval));
             this.pingThread.setName("WebSocket Client Ping Thread - " + this.address);
             this.pingThread.start();
 
