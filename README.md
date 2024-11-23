@@ -13,8 +13,8 @@ Select a subproject to get started.
 [Events](/events/) &bull; Event helpers.  
 [Functional](/functional/) &bull; Functional code helpers.  
 [IPC](/ipc/) &bull; An in-progress IPC framework.  
-[IO](/io/) &bull; Utilties for handling information.
-[WebSocket](/websocket/) &bull; An in-progress WebSocket client. Not recommended for production use as it doesn't strictly adhere to the spec.
+[IO](/io/) &bull; Utilties for handling information.  
+[WebSocket](/websocket/) &bull; An in-progress WebSocket client. Not recommended for production use as it doesn't strictly adhere to the spec.  
 
 ## Repository
 
