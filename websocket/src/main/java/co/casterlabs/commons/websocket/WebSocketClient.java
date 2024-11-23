@@ -330,6 +330,7 @@ public class WebSocketClient implements Closeable {
             this.state = State.CONNECTED;
 
             this.pingThread = this.threadFactory.newThread(this::doPing);
+            this.pingThread.setName("WebSocket Client Ping Thread - " + this.address);
             this.pingThread.start();
 
             this.readThread = this.threadFactory.newThread(() -> {
@@ -342,6 +343,7 @@ public class WebSocketClient implements Closeable {
                     this.close();
                 }
             });
+            this.readThread.setName("WebSocket Client Read Thread - " + this.address);
             this.readThread.start();
         } catch (IOException e) {
             this.state = State.CLOSED;
