@@ -13,6 +13,7 @@
 		<module>ipc</module>
 		<module>io</module>
 		<module>localization</module>
+		<module>websocket</module>
 	</modules>
 
 	<properties>
