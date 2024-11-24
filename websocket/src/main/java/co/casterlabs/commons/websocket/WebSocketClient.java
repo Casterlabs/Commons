@@ -58,7 +58,6 @@ public class WebSocketClient implements Closeable {
     }
 
     public WebSocketClient(@NonNull URI uri, @NonNull Map<String, String> additionalHeaders, @NonNull List<String> acceptedProtocols) {
-
         String httpHost = uri.getHost();
         int port;
 
@@ -137,7 +136,7 @@ public class WebSocketClient implements Closeable {
         }
     }
 
-    private void doRead() {
+    private void doRead() throws IOException {
         try (Socket _s = this.socket) {
             // For continuation frames.
             int fragmentedOpCode = 0;
@@ -279,8 +278,6 @@ public class WebSocketClient implements Closeable {
                         continue;
                 }
             }
-        } catch (Throwable t) {
-            t.printStackTrace();
         } finally {
             this.pingThread.interrupt();
         }
