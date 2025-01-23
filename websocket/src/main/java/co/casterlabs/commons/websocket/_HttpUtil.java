@@ -11,7 +11,7 @@ import co.casterlabs.commons.io.streams.OverzealousInputStream;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 
-class _ConnectionUtil {
+class _HttpUtil {
     private static final int MAX_REQUEST_LINE_LENGTH = 16 /*kb*/ * 1024;
     private static final int MAX_HEADER_LENGTH = 16 /*kb*/ * 1024;
     public static final Charset CHARSET = StandardCharsets.ISO_8859_1;
@@ -33,15 +33,15 @@ class _ConnectionUtil {
     /* ---------------- */
 
     static ResponseLineInfo readResponseLine(OverzealousInputStream input, int guessedMtu) throws IOException {
-        _WorkBuffer buffer = new _WorkBuffer(MAX_REQUEST_LINE_LENGTH);
+        WorkBuffer buffer = new WorkBuffer(MAX_REQUEST_LINE_LENGTH);
 
         // Request line
         int requestLineEnd = readLine(input, buffer, guessedMtu);
 
-        String version = _ConnectionUtil.readStringUntil(buffer, requestLineEnd, ' ');
+        String version = _HttpUtil.readStringUntil(buffer, requestLineEnd, ' ');
         buffer.marker++; // Consume the ' '
 
-        int statusCode = Integer.parseInt(_ConnectionUtil.readStringUntil(buffer, requestLineEnd, ' '));
+        int statusCode = Integer.parseInt(_HttpUtil.readStringUntil(buffer, requestLineEnd, ' '));
         buffer.marker++; // Consume the ' '
 
         int statusLength = requestLineEnd - buffer.marker;
@@ -59,7 +59,7 @@ class _ConnectionUtil {
 
     static Map<String, String> readHeaders(OverzealousInputStream input, int guessedMtu) throws IOException {
         Map<String, String> headers = new HashMap<>();
-        _WorkBuffer buffer = new _WorkBuffer(MAX_HEADER_LENGTH);
+        WorkBuffer buffer = new WorkBuffer(MAX_HEADER_LENGTH);
 
         String currentKey = null;
         String currentValue = null;
@@ -113,7 +113,7 @@ class _ConnectionUtil {
     /* Helpers          */
     /* ---------------- */
 
-    private static int readLine(InputStream in, _WorkBuffer buffer, int guessedMtu) throws IOException {
+    private static int readLine(InputStream in, WorkBuffer buffer, int guessedMtu) throws IOException {
         while (true) {
             for (int bufferIndex = buffer.marker; bufferIndex < buffer.limit; bufferIndex++) {
                 if (buffer.raw[bufferIndex] == '\r' && buffer.raw[bufferIndex + 1] == '\n') {
@@ -141,7 +141,7 @@ class _ConnectionUtil {
         }
     }
 
-    private static String readStringUntil(_WorkBuffer buffer, int limit, char target) throws IOException {
+    private static String readStringUntil(WorkBuffer buffer, int limit, char target) throws IOException {
         int start = buffer.marker;
         int end = start;
         for (; end < limit; end++) {
@@ -154,6 +154,21 @@ class _ConnectionUtil {
 
         buffer.marker = end; // +1 to consume the target.
         return new String(buffer.raw, start, end - start, CHARSET);
+    }
+
+    private static class WorkBuffer {
+        public final byte[] raw;
+        public int marker;
+        public int limit = 0;
+
+        public WorkBuffer(int bufferSize) {
+            this.raw = new byte[bufferSize];
+        }
+
+        public int available() {
+            return this.raw.length - this.limit;
+        }
+
     }
 
 }
