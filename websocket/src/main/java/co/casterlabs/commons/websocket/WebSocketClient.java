@@ -341,10 +341,7 @@ public class WebSocketClient implements Closeable {
             this.readThread.setName("WebSocket Client Read Thread - " + this.address);
             this.readThread.start();
         } catch (IOException e) {
-            this.state = State.CLOSED;
-            try {
-                this.socket.close();
-            } catch (IOException ignored) {}
+            this.close();
             throw e;
         } finally {
             this.lock.unlock();
@@ -357,13 +354,15 @@ public class WebSocketClient implements Closeable {
         try {
             if (this.state != State.CONNECTED) return; // Silent return.
 
+            this.listener.onClosed(this);
+
             try {
                 this.sendFrame(true, WebsocketOpCode.CLOSE, new byte[0]);
-            } catch (IOException ignored) {}
+            } catch (Throwable ignored) {}
 
             try {
                 this.socket.close();
-            } catch (IOException ignored) {}
+            } catch (Throwable ignored) {}
         } finally {
             this.state = State.CLOSED;
             this.lock.unlock();
