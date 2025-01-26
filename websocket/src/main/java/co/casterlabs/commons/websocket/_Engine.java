@@ -138,7 +138,7 @@ class _Engine implements Closeable {
             this.client.listener.onOpen(this.client, headers, acceptedProtocol);
 
             this.pingThread = this.client.threadFactory.newThread(() -> {
-                try (Socket _s = this.socket) {
+                try {
                     this.writer.doPingLoop(pingInterval);
                 } catch (Throwable ignored) {} finally {
                     this.close();
@@ -148,7 +148,7 @@ class _Engine implements Closeable {
             this.pingThread.start();
 
             this.readThread = this.client.threadFactory.newThread(() -> {
-                try (Socket _s = this.socket) {
+                try {
                     this.reader.doReadLoop();
                 } catch (Throwable ignored) {} finally {
                     this.close();
