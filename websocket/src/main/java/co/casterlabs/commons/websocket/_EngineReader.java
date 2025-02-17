@@ -82,6 +82,7 @@ class _EngineReader {
             // We're starting a new fragmented message, store this info for later.
             if (!isFinished && op != _OpCode.CONTINUATION) {
                 fragmentedOpCode = op;
+                op = _OpCode.CONTINUATION;
             }
 
             // Handle fragmented messages.
@@ -110,7 +111,6 @@ class _EngineReader {
                 op = fragmentedOpCode;
                 fragmentedLength = 0;
                 fragmentedPackets.clear();
-                break;
             }
 
             // Parse the op code and do behavior tingz.
