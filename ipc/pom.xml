@@ -33,7 +33,7 @@
 		<dependency>
 			<groupId>co.casterlabs</groupId>
 			<artifactId>rson</artifactId>
-			<version>1fdef09</version> <!-- Still 1.17.8 -->
+			<version>1.18.0</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
