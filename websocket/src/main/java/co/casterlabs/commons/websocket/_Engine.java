@@ -169,6 +169,7 @@ class _Engine implements Closeable {
         this.stateLock.lock();
         try {
             if (this.state != _State.CONNECTED) return; // Silent return.
+            this.state = _State.CLOSED;
 
             try {
                 this.writer.sendFrame(true, _OpCode.CLOSE, new byte[0], 0, 0);
@@ -183,7 +184,6 @@ class _Engine implements Closeable {
 
             this.client.listener.onClosed(this.client);
         } finally {
-            this.state = _State.CLOSED;
             this.stateLock.unlock();
         }
     }
