@@ -25,8 +25,13 @@ public class LimitedInputStream extends InputStream {
     private final InputStream in;
     private long limit;
 
+    /**
+     * Consumes all remaining bytes from the stream.
+     */
     @Override
-    public void close() throws IOException {} // NOOP
+    public synchronized void close() throws IOException {
+        this.skip(this.limit);
+    }
 
     @Override
     public synchronized int read() throws IOException {
