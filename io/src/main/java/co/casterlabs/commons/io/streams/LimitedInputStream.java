@@ -25,28 +25,28 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class LimitedInputStream extends InputStream {
     private final InputStream in;
-    private long limit;
+    private long remaining;
 
     /**
      * Consumes all remaining bytes from the stream.
      */
     @Override
     public void close() throws IOException {
-        this.skip(this.limit);
+        this.skip(this.remaining);
     }
 
     @Override
     public int read() throws IOException {
-        if (this.limit == 0) {
+        if (this.remaining == 0) {
             return -1;
         }
-        this.limit--;
+        this.remaining--;
         return this.in.read();
     }
 
     @Override
     public int read(byte b[], int off, int len) throws IOException {
-        if (this.limit == 0) {
+        if (this.remaining == 0) {
             return -1;
         }
 
@@ -54,18 +54,18 @@ public class LimitedInputStream extends InputStream {
             return 0;
         }
 
-        if (len > this.limit) { // Clamp.
-            len = (int) this.limit;
+        if (len > this.remaining) { // Clamp.
+            len = (int) this.remaining;
         }
 
         int read = this.in.read(b, off, len);
-        this.limit -= read;
+        this.remaining -= read;
         return read;
     }
 
     @Override
     public long skip(long n) throws IOException {
-        if (this.limit == 0) {
+        if (this.remaining == 0) {
             return -1;
         }
 
@@ -73,24 +73,24 @@ public class LimitedInputStream extends InputStream {
             return 0;
         }
 
-        if (n > this.limit) { // Clamp.
-            n = this.limit;
+        if (n > this.remaining) { // Clamp.
+            n = this.remaining;
         }
 
         long skipped = this.in.skip(n);
-        this.limit -= skipped;
+        this.remaining -= skipped;
         return skipped;
     }
 
     @Override
     public int available() throws IOException {
-        if (this.limit == 0) {
+        if (this.remaining == 0) {
             return -1;
         }
 
         int available = this.in.available();
-        if (available > this.limit) {
-            return (int) this.limit;
+        if (available > this.remaining) {
+            return (int) this.remaining;
         }
 
         return available;
