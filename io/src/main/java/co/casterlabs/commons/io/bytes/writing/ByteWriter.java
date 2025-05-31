@@ -12,10 +12,13 @@ See the License for the specific language governing permissions and limitations 
 package co.casterlabs.commons.io.bytes.writing;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 public abstract class ByteWriter implements AutoCloseable {
     public final Endian le = new LittleEndian();
     public final Endian be = new BigEndian();
+
+    public final OutputStream asStream = new _AsOutputStream(this);
 
     /**
      * @throws IOException if an I/O error occurs

@@ -12,12 +12,15 @@ See the License for the specific language governing permissions and limitations 
 package co.casterlabs.commons.io.bytes.reading;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import co.casterlabs.commons.io.bytes.EndOfStreamException;
 
 public abstract class ByteReader implements AutoCloseable {
     public final Endian le = new LittleEndian();
     public final Endian be = new BigEndian();
+
+    public final InputStream asStream = new _AsInputStream(this);
 
     /**
      * Skips len bytes from the source.
