@@ -48,6 +48,10 @@ public class LimitedInputStream extends InputStream {
             return -1;
         }
 
+        if (len < 1) {
+            return 0;
+        }
+
         if (len > this.limit) { // Clamp.
             len = (int) this.limit;
         }
@@ -61,6 +65,10 @@ public class LimitedInputStream extends InputStream {
     public synchronized long skip(long n) throws IOException {
         if (this.limit == 0) {
             return -1;
+        }
+
+        if (n < 1) {
+            return 0;
         }
 
         if (n > this.limit) { // Clamp.
