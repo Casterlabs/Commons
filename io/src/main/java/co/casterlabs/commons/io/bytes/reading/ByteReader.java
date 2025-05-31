@@ -13,6 +13,8 @@ package co.casterlabs.commons.io.bytes.reading;
 
 import java.io.IOException;
 
+import co.casterlabs.commons.io.bytes.EndOfStreamException;
+
 public abstract class ByteReader implements AutoCloseable {
     public final Endian le = new LittleEndian();
     public final Endian be = new BigEndian();
@@ -20,24 +22,24 @@ public abstract class ByteReader implements AutoCloseable {
     /**
      * Skips len bytes from the source.
      * 
-     * @throws IOException if an I/O error occurs
-     * @throws IOException if the end of the stream is reached
+     * @throws IOException          if an I/O error occurs
+     * @throws EndOfStreamException if the end of the stream is reached
      */
     public abstract void skip(int len) throws IOException;
 
     /**
      * Reads len bytes from the source.
      * 
-     * @throws IOException if an I/O error occurs
-     * @throws IOException if the end of the stream is reached
+     * @throws IOException          if an I/O error occurs
+     * @throws EndOfStreamException if the end of the stream is reached
      */
     public abstract byte[] read(int len) throws IOException;
 
     /**
      * Reads len bytes from the source and puts them into b at offset off.
      * 
-     * @throws IOException if an I/O error occurs
-     * @throws IOException if the end of the stream is reached
+     * @throws IOException          if an I/O error occurs
+     * @throws EndOfStreamException if the end of the stream is reached
      */
     public abstract void read(byte[] b, int off, int len) throws IOException;
 
@@ -64,45 +66,45 @@ public abstract class ByteReader implements AutoCloseable {
         /* ---------------- */
 
         /**
-         * @return             an unsigned 8 bit value, between 0-255
+         * @return                      an unsigned 8 bit value, between 0-255
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public int u8() throws IOException {
             return read();
         }
 
         /**
-         * @return             an unsigned 16 bit value, between 0-65535
+         * @return                      an unsigned 16 bit value, between 0-65535
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public abstract int u16() throws IOException;
 
         /**
-         * @return             an unsigned 24 bit value, between 0-16777215
+         * @return                      an unsigned 24 bit value, between 0-16777215
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public abstract int u24() throws IOException;
 
         /**
-         * @return             an unsigned 32 bit value, between 0-4294967295
+         * @return                      an unsigned 32 bit value, between 0-4294967295
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public abstract long u32() throws IOException;
 
         /**
-         * @return             an unsigned long. You will have to do unsigned operations
-         *                     via {@link Long}!
+         * @return                      an unsigned long. You will have to do unsigned
+         *                              operations via {@link Long}!
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public abstract long u64() throws IOException;
 
@@ -111,8 +113,8 @@ public abstract class ByteReader implements AutoCloseable {
         /* ---------------- */
 
         /**
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public float flt() throws IOException {
             int bits = (int) this.u32();
@@ -120,8 +122,8 @@ public abstract class ByteReader implements AutoCloseable {
         }
 
         /**
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public double dbl() throws IOException {
             long bits = this.u64();
@@ -133,40 +135,40 @@ public abstract class ByteReader implements AutoCloseable {
         /* ---------------- */
 
         /**
-         * @return             an signed byte
+         * @return                      an signed byte
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public byte s8() throws IOException {
             return (byte) this.u8();
         }
 
         /**
-         * @return             an signed short
+         * @return                      an signed short
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public short s16() throws IOException {
             return (short) this.u16();
         }
 
         /**
-         * @return             an signed int
+         * @return                      an signed int
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public int s32() throws IOException {
             return (int) this.u32();
         }
 
         /**
-         * @return             an signed long
+         * @return                      an signed long
          * 
-         * @throws IOException if an I/O error occurs
-         * @throws IOException if the end of the stream is reached
+         * @throws IOException          if an I/O error occurs
+         * @throws EndOfStreamException if the end of the stream is reached
          */
         public long s64() throws IOException {
             return this.u64();

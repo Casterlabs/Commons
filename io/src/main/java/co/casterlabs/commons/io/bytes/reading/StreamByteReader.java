@@ -14,6 +14,7 @@ package co.casterlabs.commons.io.bytes.reading;
 import java.io.IOException;
 import java.io.InputStream;
 
+import co.casterlabs.commons.io.bytes.EndOfStreamException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -30,7 +31,7 @@ public class StreamByteReader extends ByteReader {
 
         while (skipped < len) {
             long round = this.stream.skip(len);
-            if (round == -1) throw new IOException("End of stream");
+            if (round == -1) throw new EndOfStreamException("End of stream");
             skipped += round;
         }
     }
@@ -45,7 +46,7 @@ public class StreamByteReader extends ByteReader {
         int total = 0;
         while (total < len) {
             int read = this.stream.read(buf, total, len - total);
-            if (read == -1) throw new IOException("End of stream");
+            if (read == -1) throw new EndOfStreamException("End of stream");
             total += read;
         }
         return buf;
@@ -56,7 +57,7 @@ public class StreamByteReader extends ByteReader {
         int remaining = len;
         while (remaining > 0) {
             int read = this.stream.read(b, off + len - remaining, remaining);
-            if (read == -1) throw new IOException("End of stream");
+            if (read == -1) throw new EndOfStreamException("End of stream");
             remaining -= read;
         }
     }
@@ -64,7 +65,7 @@ public class StreamByteReader extends ByteReader {
     @Override
     protected int read() throws IOException {
         int read = this.stream.read();
-        if (read == -1) throw new IOException("End of stream");
+        if (read == -1) throw new EndOfStreamException("End of stream");
         return read;
     }
 

@@ -13,6 +13,7 @@ package co.casterlabs.commons.io.bytes.writing;
 
 import java.io.IOException;
 
+import co.casterlabs.commons.io.bytes.EndOfStreamException;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -22,7 +23,7 @@ public class LimitedByteWriter extends ByteWriter {
 
     private void ensureCapacity(int len) throws IOException {
         if (this.remaining < len) {
-            throw new IOException("Capacity reached.");
+            throw new EndOfStreamException("Capacity reached.");
         }
     }
 

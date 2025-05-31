@@ -13,6 +13,7 @@ package co.casterlabs.commons.io.bytes.reading;
 
 import java.io.IOException;
 
+import co.casterlabs.commons.io.bytes.EndOfStreamException;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class ArrayByteReader extends ByteReader {
 
     private void ensureReadable(int len) throws IOException {
         if (this.index + len > this.bytes.length) {
-            throw new IOException("End of stream");
+            throw new EndOfStreamException("End of stream");
         }
     }
 
