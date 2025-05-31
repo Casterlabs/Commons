@@ -1,5 +1,5 @@
 /* 
-Copyright 2023 Casterlabs
+Copyright 2025 Casterlabs
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -19,6 +19,8 @@ import lombok.AllArgsConstructor;
 /**
  * This wrapper allows you to place a read limit on an input stream to prevent
  * you from unintentionally reading too many bytes.
+ * 
+ * @apiNote This class is not thread-safe.
  */
 @AllArgsConstructor
 public class LimitedInputStream extends InputStream {
@@ -29,12 +31,12 @@ public class LimitedInputStream extends InputStream {
      * Consumes all remaining bytes from the stream.
      */
     @Override
-    public synchronized void close() throws IOException {
+    public void close() throws IOException {
         this.skip(this.limit);
     }
 
     @Override
-    public synchronized int read() throws IOException {
+    public int read() throws IOException {
         if (this.limit == 0) {
             return -1;
         }
@@ -43,7 +45,7 @@ public class LimitedInputStream extends InputStream {
     }
 
     @Override
-    public synchronized int read(byte b[], int off, int len) throws IOException {
+    public int read(byte b[], int off, int len) throws IOException {
         if (this.limit == 0) {
             return -1;
         }
@@ -62,7 +64,7 @@ public class LimitedInputStream extends InputStream {
     }
 
     @Override
-    public synchronized long skip(long n) throws IOException {
+    public long skip(long n) throws IOException {
         if (this.limit == 0) {
             return -1;
         }
@@ -81,7 +83,7 @@ public class LimitedInputStream extends InputStream {
     }
 
     @Override
-    public synchronized int available() throws IOException {
+    public int available() throws IOException {
         if (this.limit == 0) {
             return -1;
         }
