@@ -21,15 +21,15 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class ForceFlushedOutputStream extends OutputStream {
-    private final OutputStream wrap;
+    private final OutputStream underlying;
 
     /**
      * See: {@link OutputStream#write(int)}
      */
     @Override
     public void write(int b) throws IOException {
-        this.wrap.write(b);
-        this.wrap.flush();
+        this.underlying.write(b);
+        this.underlying.flush();
     }
 
     /**
@@ -37,8 +37,8 @@ public class ForceFlushedOutputStream extends OutputStream {
      */
     @Override
     public void write(byte[] b) throws IOException {
-        this.wrap.write(b);
-        this.wrap.flush();
+        this.underlying.write(b);
+        this.underlying.flush();
     }
 
     /**
@@ -46,8 +46,8 @@ public class ForceFlushedOutputStream extends OutputStream {
      */
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        this.wrap.write(b, off, len);
-        this.wrap.flush();
+        this.underlying.write(b, off, len);
+        this.underlying.flush();
     }
 
     /**
@@ -55,7 +55,7 @@ public class ForceFlushedOutputStream extends OutputStream {
      */
     @Override
     public void flush() throws IOException {
-        this.wrap.flush();
+        this.underlying.flush();
     }
 
     /**
@@ -63,7 +63,7 @@ public class ForceFlushedOutputStream extends OutputStream {
      */
     @Override
     public void close() throws IOException {
-        this.wrap.close();
+        this.underlying.close();
     }
 
 }

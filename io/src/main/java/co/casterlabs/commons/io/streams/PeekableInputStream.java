@@ -14,7 +14,7 @@ package co.casterlabs.commons.io.streams;
 import java.io.IOException;
 import java.io.InputStream;
 
-import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 /**
  * An InputStream wrapper that allows you to "peek" ahead at bytes without
@@ -24,15 +24,12 @@ import lombok.NonNull;
  * 
  * @see {@link PeekableInputStream#peek(int)}
  */
+@RequiredArgsConstructor
 public class PeekableInputStream extends InputStream {
-    private final InputStream wrapped;
+    private final InputStream underlying;
 
     private byte[] currentBuffer = null;
     private int bufferPos = 0;
-
-    public PeekableInputStream(@NonNull InputStream toWrap) {
-        this.wrapped = toWrap;
-    }
 
     /**
      * @return if the stream is current buffering data as the result of a peek()
@@ -87,7 +84,7 @@ public class PeekableInputStream extends InputStream {
                 int bytesReadIntoBuffer = oldAmountBuffered;
                 do {
                     // Keep reading into the buffer until we have the correct amount.
-                    bytesReadIntoBuffer += this.wrapped.read(this.currentBuffer, bytesReadIntoBuffer, newBufferSize - bytesReadIntoBuffer);
+                    bytesReadIntoBuffer += this.underlying.read(this.currentBuffer, bytesReadIntoBuffer, newBufferSize - bytesReadIntoBuffer);
                 } while (bytesReadIntoBuffer < newBufferSize);
             } else {
                 // We need to create a buffer.
@@ -99,7 +96,7 @@ public class PeekableInputStream extends InputStream {
                 int bytesReadIntoBuffer = 0;
                 do {
                     // Keep reading into the buffer until we have the correct amount.
-                    bytesReadIntoBuffer += this.wrapped.read(this.currentBuffer, bytesReadIntoBuffer, toRead - bytesReadIntoBuffer);
+                    bytesReadIntoBuffer += this.underlying.read(this.currentBuffer, bytesReadIntoBuffer, toRead - bytesReadIntoBuffer);
                 } while (bytesReadIntoBuffer < toRead);
             }
         } // Otherwise, we already have the data buffered :D
@@ -132,7 +129,7 @@ public class PeekableInputStream extends InputStream {
     @Override
     public synchronized int read() throws IOException {
         if (!this.hasDataBuffered()) {
-            return this.wrapped.read();
+            return this.underlying.read();
         }
 
         int result = this.currentBuffer[this.bufferPos++];
@@ -150,7 +147,7 @@ public class PeekableInputStream extends InputStream {
     @Override
     public synchronized int read(byte[] b, int off, int len) throws IOException {
         if (!this.hasDataBuffered()) {
-            return this.wrapped.read(b, off, len);
+            return this.underlying.read(b, off, len);
         }
 
         int nread = Math.min(len, this.amountBuffered());
@@ -171,7 +168,7 @@ public class PeekableInputStream extends InputStream {
     @Override
     public synchronized long skip(long n) throws IOException {
         if (!this.hasDataBuffered()) {
-            return this.wrapped.skip(n);
+            return this.underlying.skip(n);
         }
 
         long nread = Math.min(n, this.amountBuffered());
@@ -190,7 +187,7 @@ public class PeekableInputStream extends InputStream {
     @Override
     public synchronized int available() throws IOException {
         if (!this.hasDataBuffered()) {
-            return this.wrapped.available();
+            return this.underlying.available();
         }
 
         return this.amountBuffered();
@@ -209,7 +206,7 @@ public class PeekableInputStream extends InputStream {
     @Override
     public void close() throws IOException {
         this.currentBuffer = null;
-        this.wrapped.close();
+        this.underlying.close();
     }
 
 }

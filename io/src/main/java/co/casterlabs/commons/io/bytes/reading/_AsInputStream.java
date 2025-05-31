@@ -8,12 +8,12 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 class _AsInputStream extends InputStream {
-    private final ByteReader reader;
+    private final ByteReader delegate;
 
     @Override
     public int read() throws IOException {
         try {
-            return this.reader.read();
+            return this.delegate.read();
         } catch (EndOfStreamException e) {
             return -1;
         }
@@ -22,7 +22,7 @@ class _AsInputStream extends InputStream {
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         try {
-            this.reader.read(b, off, len);
+            this.delegate.read(b, off, len);
             return len;
         } catch (EndOfStreamException e) {
             return -1;

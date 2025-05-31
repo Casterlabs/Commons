@@ -5,11 +5,13 @@ import java.io.InputStream;
 import java.util.concurrent.locks.ReentrantLock;
 
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Basically we buffered too many bytes, so we need to give them back during a
  * read.
  */
+@RequiredArgsConstructor
 public class OverzealousInputStream extends InputStream {
     private final ReentrantLock lock = new ReentrantLock();
 
@@ -18,10 +20,6 @@ public class OverzealousInputStream extends InputStream {
     private byte[] overage = new byte[1024];
     private int overageEnd = 0;
     private int overageIndex = 0;
-
-    public OverzealousInputStream(@NonNull InputStream underlying) {
-        this.underlying = underlying;
-    }
 
     private void ensureCapacity(int additionalSize) {
         int requiredCapacity = this.overageEnd - this.overageIndex + additionalSize;

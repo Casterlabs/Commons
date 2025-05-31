@@ -7,21 +7,21 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 class _AsOutputStream extends OutputStream {
-    private final ByteWriter writer;
+    private final ByteWriter delegate;
 
     @Override
     public void write(int b) throws IOException {
-        this.writer.write(b);
+        this.delegate.write(b);
     }
 
     @Override
     public void write(byte[] b) throws IOException {
-        this.writer.write(b);
+        this.delegate.write(b);
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
-        this.writer.write(b, off, len);
+        this.delegate.write(b, off, len);
     }
 
 }

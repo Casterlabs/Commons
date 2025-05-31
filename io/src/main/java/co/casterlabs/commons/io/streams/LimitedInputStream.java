@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
  */
 @AllArgsConstructor
 public class LimitedInputStream extends InputStream {
-    private final InputStream in;
+    private final InputStream underlying;
     private long remaining;
 
     /**
@@ -41,7 +41,7 @@ public class LimitedInputStream extends InputStream {
             return -1;
         }
         this.remaining--;
-        return this.in.read();
+        return this.underlying.read();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class LimitedInputStream extends InputStream {
             len = (int) this.remaining;
         }
 
-        int read = this.in.read(b, off, len);
+        int read = this.underlying.read(b, off, len);
         this.remaining -= read;
         return read;
     }
@@ -77,7 +77,7 @@ public class LimitedInputStream extends InputStream {
             n = this.remaining;
         }
 
-        long skipped = this.in.skip(n);
+        long skipped = this.underlying.skip(n);
         this.remaining -= skipped;
         return skipped;
     }
@@ -88,7 +88,7 @@ public class LimitedInputStream extends InputStream {
             return -1;
         }
 
-        int available = this.in.available();
+        int available = this.underlying.available();
         if (available > this.remaining) {
             return (int) this.remaining;
         }

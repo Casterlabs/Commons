@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class NonCloseableOutputStream extends OutputStream {
-    private final OutputStream out;
+    private final OutputStream underlying;
     private boolean isClosed;
 
     @Override
@@ -33,14 +33,14 @@ public class NonCloseableOutputStream extends OutputStream {
     @Override
     public void write(int b) throws IOException {
         if (this.isClosed) throw new IOException("NCOutputStream is closed.");
-        this.out.write(b);
+        this.underlying.write(b);
     }
 
     @Override
     public void write(byte[] b, int off, int len) throws IOException {
         if (this.isClosed) throw new IOException("NCOutputStream is closed.");
         if (len == 0) return;
-        this.out.write(b, off, len);
+        this.underlying.write(b, off, len);
     }
 
 }
