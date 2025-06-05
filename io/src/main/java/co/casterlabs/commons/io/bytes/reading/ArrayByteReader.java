@@ -54,7 +54,7 @@ public class ArrayByteReader extends ByteReader {
     @Override
     protected int read() throws IOException {
         ensureReadable(1);
-        return this.bytes[this.index++];
+        return this.bytes[this.index++] & 0xFF;
     }
 
     @Override
